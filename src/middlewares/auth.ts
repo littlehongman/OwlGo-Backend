@@ -25,7 +25,7 @@ const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
 
     // no username mapped to sid
     if (username) {
-        //req.username = username;
+        req.body.username = username;
         next(); //next line in app.js
     }
     else {
