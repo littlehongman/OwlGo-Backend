@@ -77,7 +77,7 @@ const login = (req: Request, res: Response) => {
         let sid = md5(username) // CHANGE THIS! 
         sessionUser[sid] = username;
 
-	// Adding cookie for session id
+	    // Adding cookie for session id
         res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true });
         let msg = {username: username, result: 'success'};
         res.send(msg);
