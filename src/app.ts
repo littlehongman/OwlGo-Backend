@@ -43,11 +43,14 @@ connectDB()
 const hello = async(req: Request, res: Response) => {
     const newUser = await (new User({ 
         username: '123',
-        created: new Date()
+        salt: "1",
+        hash: "1"
     }).save());
+
+    const user = await User.findOne({ username: '123' });
+
     
     res.send({username: newUser.username});
-    console.log(123);
     //res.send('Hello');
 }
 

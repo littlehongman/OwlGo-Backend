@@ -1,14 +1,16 @@
 import mongoose from "mongoose"
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: Number,
-    required: [true, 'Username is required']
-  },
-  created: {
-    type: Date,
-    required: [true, 'Created date is required']
-  }
+
+interface User{
+	username: string;
+	salt: string;
+	hash?: string;
+}
+
+const userSchema = new mongoose.Schema<User>({
+	username: { type: String, required: [true, 'Username is required']},
+	salt:{ type: String, required: true},
+	hash:{ type: String, require: true},
 })
 
 export const User = mongoose.model('user', userSchema) // user ==> collection name
