@@ -2,7 +2,8 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-import articleRoute from './routes/articles'
+import articleRoute from './routes/article'
+import profileRoute from './routes/profile'
 import auth from './middlewares/auth'
 import mongoose, { ConnectOptions } from "mongoose"
 import { User } from './models/User';
@@ -55,7 +56,9 @@ const hello = async(req: Request, res: Response) => {
 }
 
 app.get("/", hello);
-app.use('/', auth)
+app.use('/', auth);
+
+app.use('/', profileRoute)
 app.use('/', articleRoute);
 
 

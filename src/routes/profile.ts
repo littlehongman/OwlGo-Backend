@@ -1,13 +1,13 @@
 import { Router } from 'express';
+import { getUserHeadline, updateHeadline } from '../controllers/profile';
+
 
 const router = Router();
 
 
-router.get('/headlin/:user?', (req, res) => {
+router.get('/headline/:user?', getUserHeadline);
 
-});
-
-router.put('/headline');
+router.put('/headline', updateHeadline);
 
 router.get('/email/:user?');
 router.put('/email')

@@ -1,13 +1,8 @@
 import mongoose from "mongoose"
+import { IUser } from "../utils/types"
 
 
-interface User{
-	username: string;
-	salt: string;
-	hash?: string;
-}
-
-const userSchema = new mongoose.Schema<User>({
+const userSchema = new mongoose.Schema<IUser>({
 	username: { type: String, required: [true, 'Username is required']},
 	salt:{ type: String, required: true},
 	hash:{ type: String, require: true},

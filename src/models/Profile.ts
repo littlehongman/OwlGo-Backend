@@ -1,20 +1,9 @@
 import mongoose from "mongoose"
-
-interface Profile{
-    id: number,
-	username: string;
-    name: string;
-	email: string;
-    phone: string;
-    birthday: string;
-    zipCode: string;
-    avatar: string;
-    friends: number[];
-	headline: string;
-}
+import { IProfile } from "../utils/types"
 
 
-const profileSchema = new mongoose.Schema<Profile>({
+
+const profileSchema = new mongoose.Schema<IProfile>({
     id: {type: Number, required: true},
     username: { type: String, required: [true, 'Username is required']},
     name: { type: String, default:""},
