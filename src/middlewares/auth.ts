@@ -60,7 +60,7 @@ const register = async(req: Request, res: Response) => {
     const userNum: number = await Profile.countDocuments({});
 
     const newProfile = new Profile({
-        id: userNum,
+        //id: userNum,
         username: username,
         name: "",
         email: "www@rice.edu",

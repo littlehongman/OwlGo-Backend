@@ -9,8 +9,9 @@ export const getPosts: RequestHandler = async(req, res) => {
     
     // If specify id => return all posts of the user
     if (req.params.id){
-        const userId: number = (await Profile.findOne({ username: req.params.id }))?.id
-        const userPosts = await Article.find({userId: userId});
+        //const userId: number = (await Profile.findOne({ username: req.params.id }))?.id
+        const username: string = req.params.id;
+        const userPosts = await Article.find({username: username});
 
         res.send(userPosts);
 
@@ -18,22 +19,23 @@ export const getPosts: RequestHandler = async(req, res) => {
     }
 
     // If no specify => return posts for current user
-    const user: IProfile | null = await Profile.findOne({ username: req.body.username });
-    const friends: number[] | undefined = user?.friends;
+    const username: string = req.body.username;
+    const user: IProfile | null = await Profile.findOne({ username: username });
+    const friends: string[] | undefined = user?.friends;
 
-    const posts = await Article.find({ $or: [ { userId: { $in: friends } }, { userId: user?.id } ] })
+    const posts = await Article.find({ $or: [ { userId: { $in: friends } }, { username: username } ] })
 
     res.send(posts)
 }
 
 export const createPost: RequestHandler = async(req, res) => {
     const postNum: number = await Article.countDocuments({});
-    const userId: number = (await Profile.findOne({ username: req.body.username }))?.id
+    const username: string = req.body.username;
 
     
     const newPost = new Article({ 
         pid: postNum,
-        userId: userId,
+        username: username,
         text: req.body.text,
         img: "",
         timestamp: Date.now().toString()
@@ -41,26 +43,27 @@ export const createPost: RequestHandler = async(req, res) => {
 
     await newPost.save();
 
-    const allPosts = await Article.find({userId: userId});
+    const allPosts = await Article.find({username: username});
 
     res.send(allPosts);
 }
 
 export const updatePost: RequestHandler = async(req, res) => {
     const pid = req.params.id;
-    const userId: number = (await Profile.findOne({ username: req.body.username }))?.id
+    const username: string = req.body.username;
+    //const userId: number = (await Profile.findOne({ username: req.body.username }))?.id
     const post = await Article.findOne({ pid: pid });
     
     const text = req.body.text;
 
     // Check if comments 
-    if (req.body.commentId){
+    if (req.body.commentId !== '0'){
         const commentId = req.body.commentId;
         
         if (commentId == "-1"){
             const newComment: IComment = {
                 cid: post?.comments.length?? 0,
-                userId: userId,
+                username: username,
                 text: text,
                 timestamp: Date.now().toString()
             }
@@ -74,7 +77,7 @@ export const updatePost: RequestHandler = async(req, res) => {
             // check if the user owned the comment
             const comment = post?.comments[commentId]
 
-            if (comment?.userId !== userId){
+            if (comment?.username !== username){
                 res.sendStatus(401);
                 return;
             }
@@ -99,7 +102,7 @@ export const updatePost: RequestHandler = async(req, res) => {
     // Update Post
 
      // check if the user owned the post
-     if (post?.userId !== userId){
+     if (post?.username !== username){
          res.sendStatus(401);
          return;
      }

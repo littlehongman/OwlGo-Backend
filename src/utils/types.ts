@@ -6,7 +6,7 @@ export interface IUser{
 }
 
 export interface IProfile{
-    id: number,
+    // id: number,
 	username: string;
     name: string;
 	email: string;
@@ -14,13 +14,13 @@ export interface IProfile{
     birthday: string;
     zipCode: string;
     avatar: string;
-    friends: number[];
+    friends: string[];
 	headline: string;
 }
 
 export interface IArticle{
     pid: number,
-    userId: number,
+    username: string,
     text: string,
     img: string,
     timestamp: string;
@@ -29,7 +29,7 @@ export interface IArticle{
 
 export interface IComment{
     cid: number,
-    userId: number,
+    username: string,
     text: string
     timestamp: string;
 }
