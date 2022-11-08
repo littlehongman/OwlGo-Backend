@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getUserHeadline, updateHeadline } from '../controllers/profile';
+import { getUserHeadline, updateHeadline, getUserEmail, updateEmail, getUserZipcode, updateZipcode, getUserAvatar, updateAvatar, getDateOfBirth } from '../controllers/profile';
 
 
 const router = Router();
@@ -9,17 +9,16 @@ router.get('/headline/:user?', getUserHeadline);
 
 router.put('/headline', updateHeadline);
 
-router.get('/email/:user?');
-router.put('/email')
+router.get('/email/:user?', getUserEmail);
+router.put('/email', updateEmail)
 
-router.get('/dob/:user?');
+router.get('/dob/:user?', getDateOfBirth);
 
-router.get('/zipcode/:user?')
-router.put('/zipcode')
+router.get('/zipcode/:user?', getUserZipcode) 
+router.put('/zipcode', updateZipcode)
 
-router.get('/avatar/:user?')
-router.put('/avatar')
+router.get('/avatar/:user?', getUserAvatar)
+router.put('/avatar', updateAvatar)
 
-router.put('/password')
 
 export default router

@@ -20,9 +20,9 @@ export interface IProfile{
 
 export interface IArticle{
     id: number,
-  userId: number,
-  text: string,
-  img: string,
-  timestamp: string;
-  comments: string[];
+    userId: number,
+    text: string,
+    img: string,
+    timestamp: string;
+    comments: string[];
 }

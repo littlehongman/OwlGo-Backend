@@ -120,11 +120,28 @@ const logout = (req: Request, res: Response) => {
     res.send("OK");
 }
 
+const changePassword = async(req: Request, res: Response) => {
+    let username = req.body.username;
+    let newPassword = req.body.password;
+
+    let salt = username + new Date().getTime();
+    let hash = md5(salt + newPassword)
+
+    const user = await User.findOneAndUpdate({ username: username }, { salt: salt, hash: hash}, { new: true });
+    const msg = { username: username, result: 'success'}
+
+
+    console.log(user);
+    res.send(msg);
+}
+
 
 router.post('/login', login);
 router.post('/register', register);
+
 router.use('/', isLoggedIn);
 router.put('/logout', logout);
+router.put('/password', changePassword);
 
 export default router
 

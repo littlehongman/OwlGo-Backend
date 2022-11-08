@@ -3,6 +3,8 @@ import { Article } from '../models/Article'
 import { Profile } from '../models/Profile';
 import { IProfile } from '../utils/types';
 
+// findOneAndUpdate (and its variants) return the document before the update by default, if you want the updated document, use new: true
+
 export const getPosts: RequestHandler = async(req, res) => {
     
     // If specify id => return all posts of the user
