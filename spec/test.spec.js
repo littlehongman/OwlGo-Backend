@@ -3,10 +3,11 @@ require('isomorphic-fetch');
 
 const url = path => `http://localhost:4000${path}`;
 
-describe('Validate Registration and Login functionality', () => {
+describe('Basic Unit Tests', () => {
     let cookie;
+    let articleId;
 
-    it('register new user', (done) => {
+    it('validate POST /register', (done) => {
         let regUser = {username: 'mrj3', password: '1234'};
         fetch(url('/register'), {
             method: 'POST',
@@ -19,7 +20,7 @@ describe('Validate Registration and Login functionality', () => {
         });
     });
 
-    it('login user', (done) => {
+    it('validate POST /login', (done) => {
         let loginUser = {username: 'mrj3', password: '1234'};
         fetch(url('/login'), {
             method: 'POST',
@@ -36,15 +37,30 @@ describe('Validate Registration and Login functionality', () => {
         });
     });
 
-    // it('should give me three or more articles', (done) => {
-    //     fetch(url('/articles'), {
-    //         method: 'GET',
-    //         headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
-    //     }).then(res => res.json()).then(res => {
-    //         if (res instanceof Array)
-    //             expect(res.length).toBeGreaterThan(2);
-    //         done();
-    //     });
-    // });
+    it('validate POST /article', (done) => {
+        let post = { text: "This is a test" };
 
+        fetch(url('/article'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
+            body: JSON.stringify(post),
+        }).then(res => res.json()).then(res => {
+            expect(res.articles.length).toEqual(1);
+            articleId = res.articles.at(-1).pid;
+            
+            console.info(articleId);
+            done();
+        });
+    });
+    
+    it('validate GET /articles', (done) => {
+        fetch(url(`/articles/${articleId}`), {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
+        }).then(res => res.json()).then(res => {
+            expect(res.article.text).toEqual("This is a test");
+
+            done();
+        });
+    });
 });
