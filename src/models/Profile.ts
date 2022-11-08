@@ -4,7 +4,7 @@ import { IProfile } from "../utils/types"
 
 
 const profileSchema = new mongoose.Schema<IProfile>({
-    id: {type: Number, required: true},
+    //id: {type: Number, required: true},
     username: { type: String, required: [true, 'Username is required']},
     name: { type: String, default:""},
     email:{ type: String, required: true },

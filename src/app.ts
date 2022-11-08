@@ -4,9 +4,9 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import articleRoute from './routes/article'
 import profileRoute from './routes/profile'
+import followingRoute from './routes/following'
 import auth from './middlewares/auth'
 import mongoose, { ConnectOptions } from "mongoose"
-import { User } from './models/User';
 
 const connectionString: string = "mongodb+srv://Johnson:123@cluster0.td6oylq.mongodb.net/DB?retryWrites=true&w=majority"
 
@@ -50,6 +50,7 @@ app.use('/', auth);
 
 app.use('/', profileRoute)
 app.use('/', articleRoute);
+app.use('/', followingRoute)
 
 
 // app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
