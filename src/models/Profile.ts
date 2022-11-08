@@ -12,7 +12,7 @@ const profileSchema = new mongoose.Schema<IProfile>({
     birthday: { type: String, required: true },
     zipCode: { type: String },
     avatar: { type: String, default: ""},
-    friends: [Number], // store other userIds
+    friends: [], // store other userIds
     headline: { type: String, default: "" }
 })
 

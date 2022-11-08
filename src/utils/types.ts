@@ -19,10 +19,17 @@ export interface IProfile{
 }
 
 export interface IArticle{
-    id: number,
+    pid: number,
     userId: number,
     text: string,
     img: string,
     timestamp: string;
-    comments: string[];
+    comments: IComment[];
+}
+
+export interface IComment{
+    cid: number,
+    userId: number,
+    text: string
+    timestamp: string;
 }

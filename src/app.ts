@@ -41,18 +41,8 @@ const connectDB = async () => {
 connectDB()
 
 
-const hello = async(req: Request, res: Response) => {
-    const newUser = await (new User({ 
-        username: '123',
-        salt: "1",
-        hash: "1"
-    }).save());
-
-    const user = await User.findOne({ username: '123' });
-
-    
-    res.send({username: newUser.username});
-    //res.send('Hello');
+const hello = (req: Request, res: Response) => {
+    res.send("Hello World");
 }
 
 app.get("/", hello);
