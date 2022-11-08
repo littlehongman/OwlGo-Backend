@@ -20,14 +20,14 @@ const getPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (isNaN(arg)) { // if params.id is username
             const username = req.params.id;
             const userPosts = yield Article_1.Article.find({ username: username });
-            res.send(userPosts);
+            res.send({ articles: userPosts });
             return;
         }
         else {
             const postId = arg;
             console.log(postId);
             const post = yield Article_1.Article.findOne({ pid: postId });
-            res.send(post);
+            res.send({ article: post });
             return;
         }
     }
@@ -36,7 +36,7 @@ const getPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield Profile_1.Profile.findOne({ username: username });
     const friends = user === null || user === void 0 ? void 0 : user.friends;
     const posts = yield Article_1.Article.find({ $or: [{ userId: { $in: friends } }, { username: username }] });
-    res.send(posts);
+    res.send({ articles: posts });
 });
 exports.getPosts = getPosts;
 const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -51,7 +51,8 @@ const createPost = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     });
     yield newPost.save();
     const allPosts = yield Article_1.Article.find({ username: username });
-    res.send(allPosts);
+    //const allPosts = await getPosts(req, res, );
+    res.send({ articles: allPosts });
 });
 exports.createPost = createPost;
 const updatePost = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

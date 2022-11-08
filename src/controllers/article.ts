@@ -15,7 +15,8 @@ export const getPosts: RequestHandler = async(req, res) => {
             const username: string = req.params.id;
             const userPosts = await Article.find({username: username});
 
-            res.send(userPosts);
+
+            res.send({ articles: userPosts });
 
             return
         } 
@@ -24,7 +25,7 @@ export const getPosts: RequestHandler = async(req, res) => {
             console.log(postId);
             const post = await Article.findOne({ pid: postId });
 
-            res.send(post);
+            res.send({ article: post });
             
             return
         }
@@ -37,7 +38,7 @@ export const getPosts: RequestHandler = async(req, res) => {
 
     const posts = await Article.find({ $or: [ { userId: { $in: friends } }, { username: username } ] })
 
-    res.send(posts)
+    res.send({ articles: posts });
 }
 
 export const createPost: RequestHandler = async(req, res) => {
@@ -55,9 +56,10 @@ export const createPost: RequestHandler = async(req, res) => {
 
     await newPost.save();
 
-    const allPosts = await Article.find({username: username});
+    const allPosts = await Article.find({ username: username });
+    //const allPosts = await getPosts(req, res, );
 
-    res.send(allPosts);
+    res.send({ articles: allPosts });
 }
 
 export const updatePost: RequestHandler = async(req, res) => {

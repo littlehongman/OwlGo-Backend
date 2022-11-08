@@ -45,6 +45,13 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!username || !password) {
         return res.sendStatus(400);
     }
+    // 1. First check if username if already in DB
+    const userExist = yield Profile_1.Profile.findOne({ username: username });
+    if (userExist !== null) {
+        let msg = { username: username, result: 'success' };
+        res.send(msg);
+        return;
+    }
     let salt = username + new Date().getTime();
     let hash = md5(salt + password); // TODO: Change this to use md5 to create a hash
     //userObjs[username] =  {username: username, salt: salt, hash: hash} // TODO: Change this to store object with username, salt, hash
