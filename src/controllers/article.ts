@@ -8,14 +8,26 @@ import { IComment, IProfile } from '../utils/types';
 export const getPosts: RequestHandler = async(req, res) => {
     
     // If specify id => return all posts of the user
-    if (req.params.id){
-        //const userId: number = (await Profile.findOne({ username: req.params.id }))?.id
-        const username: string = req.params.id;
-        const userPosts = await Article.find({username: username});
+    if (req.params.id !== undefined){
+        const arg = parseInt(req.params.id);
 
-        res.send(userPosts);
+        if (isNaN(arg)){ // if params.id is username
+            const username: string = req.params.id;
+            const userPosts = await Article.find({username: username});
 
-        return
+            res.send(userPosts);
+
+            return
+        } 
+        else{
+            const postId: number = arg;
+            console.log(postId);
+            const post = await Article.findOne({ pid: postId });
+
+            res.send(post);
+            
+            return
+        }
     }
 
     // If no specify => return posts for current user
