@@ -46,6 +46,17 @@ const register = async(req: Request, res: Response) => {
         return res.sendStatus(400);
     }
 
+    // 1. First check if username if already in DB
+    const userExist = await Profile.findOne({ username: username });
+    
+    if (userExist !== null){
+        let msg = {username: username, result: 'success'};
+        res.send(msg);
+
+        return;
+    }
+
+
     let salt = username + new Date().getTime();
     let hash = md5(salt + password) // TODO: Change this to use md5 to create a hash
     
