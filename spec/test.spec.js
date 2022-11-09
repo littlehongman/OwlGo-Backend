@@ -8,20 +8,20 @@ describe('Basic Unit Tests', () => {
     let articleId;
 
     it('validate POST /register', (done) => {
-        let regUser = {username: 'mrj3', password: '1234'};
+        let regUser = {username: 'Jason', password: '1234'};
         fetch(url('/register'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(regUser)
         }).then(res => res.json()).then(res => {
-            expect(res.username).toEqual('mrj3');
+            expect(res.username).toEqual('Jason');
             expect(res.result).toEqual('success');
             done();
         });
     });
 
     it('validate POST /login', (done) => {
-        let loginUser = {username: 'mrj3', password: '1234'};
+        let loginUser = {username: 'Jason', password: '1234'};
         fetch(url('/login'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -31,7 +31,7 @@ describe('Basic Unit Tests', () => {
 
             return res.json()
         }).then(res => {
-            expect(res.username).toEqual('mrj3');
+            expect(res.username).toEqual('Jason');
             expect(res.result).toEqual('success');
             done();
         });
@@ -53,7 +53,7 @@ describe('Basic Unit Tests', () => {
         });
     });
     
-    it('validate GET /articles', (done) => {
+    it('validate GET /articles/:id', (done) => {
         fetch(url(`/articles/${articleId}`), {
             method: 'GET',
             headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
@@ -63,4 +63,55 @@ describe('Basic Unit Tests', () => {
             done();
         });
     });
+
+    it('validate GET /articles', (done) => {
+        fetch(url('/articles'), {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
+        }).then(res => res.json()).then(res => {
+            expect(res.articles.at(-1).text).toEqual("This is a test");
+
+            done();
+        });
+    });
+
+    it('validate PUT /headline', (done) => {
+        const headline = { headline: "Winning" } 
+
+        fetch(url('/headline'), {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
+            body: JSON.stringify(headline),
+        }).then(res => res.json()).then(res => {
+            expect(res.username).toEqual("Jason");
+            expect(res.headline).toEqual("Winning");
+
+            done();
+        });
+    });
+
+
+    it('validate GET /headline', (done) => {
+        fetch(url('/headline'), {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
+        }).then(res => res.json()).then(res => {
+            expect(res.username).toEqual("Jason");
+            expect(res.headline).toEqual("Winning");
+
+            done();
+        });
+    });
+
+   
+    it('validate PUT /Logut', (done) => {
+        fetch(url('/logout'), {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
+        }).then(res => {
+            expect(res.status).toEqual(200);
+            done();
+        });
+    });
+
 });
