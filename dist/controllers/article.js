@@ -35,7 +35,7 @@ const getPosts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const username = req.body.username;
     const user = yield Profile_1.Profile.findOne({ username: username });
     const friends = user === null || user === void 0 ? void 0 : user.friends;
-    const posts = yield Article_1.Article.find({ $or: [{ userId: { $in: friends } }, { username: username }] });
+    const posts = yield Article_1.Article.find({ $or: [{ username: { $in: friends } }, { username: username }] });
     res.send({ articles: posts });
 });
 exports.getPosts = getPosts;

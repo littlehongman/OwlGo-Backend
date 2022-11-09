@@ -108,7 +108,7 @@ const logout = (req, res) => {
     // cookie already checked in isLogin
     let sid = req.cookies[cookieKey];
     delete sessionUser[sid];
-    res.send("OK");
+    res.sendStatus(200);
 };
 const changePassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let username = req.body.username;

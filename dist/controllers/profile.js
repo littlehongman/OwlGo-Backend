@@ -20,7 +20,8 @@ const getUserHeadline = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         username = req.body.username;
     }
     const user = yield Profile_1.Profile.findOne({ username: username });
-    res.send(user === null || user === void 0 ? void 0 : user.headline);
+    const msg = { username: username, headline: user === null || user === void 0 ? void 0 : user.headline };
+    res.send(msg);
 });
 exports.getUserHeadline = getUserHeadline;
 const updateHeadline = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
