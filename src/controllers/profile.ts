@@ -13,8 +13,10 @@ export const getUserHeadline: RequestHandler = async(req, res, next) => {
     }
 
     const user = await Profile.findOne({ username: username });
+
+    const msg = { username: username, headline: user?.headline };
    
-    res.send(user?.headline);
+    res.send(msg);
 };
 
 export const updateHeadline: RequestHandler = async(req, res) => {

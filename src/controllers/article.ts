@@ -36,7 +36,7 @@ export const getPosts: RequestHandler = async(req, res) => {
     const user: IProfile | null = await Profile.findOne({ username: username });
     const friends: string[] | undefined = user?.friends;
 
-    const posts = await Article.find({ $or: [ { userId: { $in: friends } }, { username: username } ] })
+    const posts = await Article.find({ $or: [ { username: { $in: friends } }, { username: username } ] })
 
     res.send({ articles: posts });
 }

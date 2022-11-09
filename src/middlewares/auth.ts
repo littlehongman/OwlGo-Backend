@@ -128,7 +128,7 @@ const logout = (req: Request, res: Response) => {
     let sid = req.cookies[cookieKey];
     delete sessionUser[sid]; 
 
-    res.send("OK");
+    res.sendStatus(200);
 }
 
 const changePassword = async(req: Request, res: Response) => {
