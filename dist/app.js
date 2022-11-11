@@ -21,6 +21,7 @@ const profile_1 = __importDefault(require("./routes/profile"));
 const following_1 = __importDefault(require("./routes/following"));
 const auth_1 = __importDefault(require("./middlewares/auth"));
 const mongoose_1 = __importDefault(require("mongoose"));
+require("dotenv/config");
 const connectionString = "mongodb+srv://Johnson:123@cluster0.td6oylq.mongodb.net/DB?retryWrites=true&w=majority";
 const app = (0, express_1.default)();
 const corsOption = { origin: "http://localhost:3000", credentials: true };
@@ -35,9 +36,10 @@ app.use((0, cors_1.default)(corsOption));
 //         console.log("successfully");
 //     }));
 // })
+// ! operator tells the compiler to ignore the possibility of it being undefined
 const connectDB = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield mongoose_1.default.connect(connectionString, {
+        yield mongoose_1.default.connect(process.env.MONGO_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });

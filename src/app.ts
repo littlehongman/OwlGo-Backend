@@ -7,8 +7,8 @@ import profileRoute from './routes/profile'
 import followingRoute from './routes/following'
 import auth from './middlewares/auth'
 import mongoose, { ConnectOptions } from "mongoose"
+import 'dotenv/config'
 
-const connectionString: string = "mongodb+srv://Johnson:123@cluster0.td6oylq.mongodb.net/DB?retryWrites=true&w=majority"
 
 const app: Application = express();
 const corsOption = {origin:"http://localhost:3000", credentials: true};
@@ -25,9 +25,10 @@ app.use(cors(corsOption));
 //         console.log("successfully");
 //     }));
 // })
+// ! operator tells the compiler to ignore the possibility of it being undefined
 const connectDB = async () => {
     try {
-      await mongoose.connect(connectionString,  {
+      await mongoose.connect(process.env.MONGO_URI!,  {
         useNewUrlParser: true,
         useUnifiedTopology: true,
       } as ConnectOptions)
