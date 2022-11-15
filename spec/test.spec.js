@@ -8,20 +8,20 @@ describe('Basic Unit Tests', () => {
     let articleId;
 
     it('validate POST /register', (done) => {
-        let regUser = {username: 'Jason', password: '1234'};
+        let regUser = {username: 'testUser', password: '123'};
         fetch(url('/register'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(regUser)
         }).then(res => res.json()).then(res => {
-            expect(res.username).toEqual('Jason');
+            expect(res.username).toEqual('testUser');
             expect(res.result).toEqual('success');
             done();
         });
     });
 
     it('validate POST /login', (done) => {
-        let loginUser = {username: 'Jason', password: '1234'};
+        let loginUser = {username: 'testUser', password: '123'};
         fetch(url('/login'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -31,7 +31,7 @@ describe('Basic Unit Tests', () => {
 
             return res.json()
         }).then(res => {
-            expect(res.username).toEqual('Jason');
+            expect(res.username).toEqual('testUser');
             expect(res.result).toEqual('success');
             done();
         });
@@ -45,10 +45,12 @@ describe('Basic Unit Tests', () => {
             headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
             body: JSON.stringify(post),
         }).then(res => res.json()).then(res => {
-            expect(res.articles.length).toEqual(1);
+            //expect(res.articles.length).toEqual(1);
             articleId = res.articles.at(-1).pid;
             
-            console.info(articleId);
+            const articleText = res.articles.at(-1).text;
+            expect(articleText).toEqual("This is a test");
+            // console.info(articleId);
             done();
         });
     });
@@ -83,7 +85,7 @@ describe('Basic Unit Tests', () => {
             headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
             body: JSON.stringify(headline),
         }).then(res => res.json()).then(res => {
-            expect(res.username).toEqual("Jason");
+            expect(res.username).toEqual("testUser");
             expect(res.headline).toEqual("Winning");
 
             done();
@@ -96,7 +98,7 @@ describe('Basic Unit Tests', () => {
             method: 'GET',
             headers: { 'Content-Type': 'application/json', 'Cookie': cookie },
         }).then(res => res.json()).then(res => {
-            expect(res.username).toEqual("Jason");
+            expect(res.username).toEqual("testUser");
             expect(res.headline).toEqual("Winning");
 
             done();

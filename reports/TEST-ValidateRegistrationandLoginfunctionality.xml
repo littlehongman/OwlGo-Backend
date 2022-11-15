@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<testsuites>
-<testsuite name="Validate Registration and Login functionality" errors="0" tests="2" failures="0" time="0.215" timestamp="2022-11-08T15:20:28">
-  <testcase classname="Validate Registration and Login functionality" name="register new user" time="0.157"></testcase>
-  <testcase classname="Validate Registration and Login functionality" name="login user" time="0.056"></testcase>
-</testsuite>
-</testsuites>
