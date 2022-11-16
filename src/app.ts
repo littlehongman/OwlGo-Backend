@@ -6,7 +6,10 @@ import articleRoute from './routes/article'
 import profileRoute from './routes/profile'
 import followingRoute from './routes/following'
 import auth from './middlewares/auth'
+import passport from './middlewares/passport'
 import mongoose, { ConnectOptions } from "mongoose"
+
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "./utils/secrets";
 import 'dotenv/config'
 
 
@@ -47,7 +50,9 @@ const hello = (req: Request, res: Response) => {
 }
 
 app.get("/", hello);
+//app.use('/', passport);
 app.use('/', auth);
+
 
 app.use('/', profileRoute)
 app.use('/', articleRoute);

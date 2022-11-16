@@ -50,8 +50,9 @@ const register = async(req: Request, res: Response) => {
     const userExist = await Profile.findOne({ username: username });
     
     if (userExist !== null){
-        let msg = {username: username, result: 'success'};
-        res.send(msg);
+        let msg = "Username alreay taken";
+
+        res.status(409).send(msg)
 
         return;
     }
@@ -73,11 +74,11 @@ const register = async(req: Request, res: Response) => {
     const newProfile = new Profile({
         //id: userNum,
         username: username,
-        name: "",
-        email: "www@rice.edu",
-        phone: "123-123-1234",
-        birthday: Date.now().toString(),
-        zipCode: "77005",
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone,
+        birthday: req.body.birthday,
+        zipCode: req.body.zipCode,
         avatar: "https://api.lorem.space/image/face?w=150&h=150&hash=" + userNum,
         friends: [],
         headline: "Actively being loser"
