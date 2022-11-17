@@ -51,7 +51,6 @@ const register = async(req: Request, res: Response) => {
     
     if (userExist !== null){
         let msg = "Username alreay taken";
-
         res.status(409).send(msg)
 
         return;
@@ -103,7 +102,7 @@ const login = async(req: Request, res: Response) => {
 
 
     if (!user) {
-        return res.sendStatus(401)
+        return res.status(404);
     }
 
     // TODO: create hash using md5, user salt and request password, check if hash matches user hash
@@ -117,10 +116,10 @@ const login = async(req: Request, res: Response) => {
 	    // Adding cookie for session id
         res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true });
         let msg = {username: username, result: 'success'};
-        res.send(msg);
+        res.status(200).send(msg);
     }
     else {
-        res.sendStatus(401);
+        res.status(403).send("Wrong password");
     }
 }
 
@@ -129,6 +128,7 @@ const logout = (req: Request, res: Response) => {
     let sid = req.cookies[cookieKey];
     delete sessionUser[sid]; 
 
+    res.clearCookie('sid');
     res.sendStatus(200);
 }
 
@@ -143,7 +143,6 @@ const changePassword = async(req: Request, res: Response) => {
     const msg = { username: username, result: 'success'}
 
 
-    console.log(user);
     res.send(msg);
 }
 
