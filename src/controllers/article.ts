@@ -51,7 +51,7 @@ export const createPost: RequestHandler = async(req, res) => {
         username: username,
         text: req.body.text,
         img: "",
-        timestamp: Date.now().toString()
+        timestamp: Date.now()
     });
 
     await newPost.save();
@@ -79,7 +79,7 @@ export const updatePost: RequestHandler = async(req, res) => {
                 cid: post?.comments.length?? 0,
                 username: username,
                 text: text,
-                timestamp: Date.now().toString()
+                timestamp: Date.now()
             }
 
             const newPost = await Article.findOneAndUpdate({ pid: pid }, { $push: { comments: newComment } }, { new: true });
@@ -102,7 +102,7 @@ export const updatePost: RequestHandler = async(req, res) => {
                     { 
                         $set: {
                             'comments.$.text': text,
-                            'comments.$.timestamp': Date.now().toString()
+                            'comments.$.timestamp': Date.now()
                         }
                     },
                     { new: true }

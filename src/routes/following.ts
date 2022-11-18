@@ -1,13 +1,16 @@
 import { Router } from 'express';
-import { getFriends, addFriend, deleteFriend  } from '../controllers/following';
+import { getFollowing, addFollowing, deleteFollowing, getFriends, deleteFriend, addFriend  } from '../controllers/following';
 
 const router = Router();
 
 
-router.get('/following/:user?', getFriends);
+router.get('/following/:user?', getFollowing);
+router.put('/following/:user', addFollowing);
+router.delete('/following/:user', deleteFollowing);
 
-router.put('/following/:user', addFriend);
 
-router.delete('/following/:user', deleteFriend);
+router.get('/friends', getFriends)
+router.put('/friends/:user', addFriend)
+router.delete('/friends/:user', deleteFriend)
 
 export default router

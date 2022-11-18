@@ -7,7 +7,7 @@ const articleSchema = new mongoose.Schema<IArticle>({
 	username: { type: String, required: true},
 	text: { type: String, required: true},
 	img: { type: String, default: ""},
-	timestamp: { type: String, required: true},
+	timestamp: { type: Number, required: true},
 	comments: []
 })
 

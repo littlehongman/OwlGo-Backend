@@ -23,7 +23,7 @@ export interface IArticle{
     username: string,
     text: string,
     img: string,
-    timestamp: string;
+    timestamp: number;
     comments: IComment[];
 }
 
@@ -31,5 +31,5 @@ export interface IComment{
     cid: number,
     username: string,
     text: string
-    timestamp: string;
+    timestamp: number;
 }
