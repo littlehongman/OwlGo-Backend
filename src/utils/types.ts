@@ -20,6 +20,10 @@ export interface IProfile{
 
 export interface IArticle{
     pid: number,
+    author: {
+        username: string,
+        avatar: string
+    }
     username: string,
     text: string,
     img: string,
@@ -29,7 +33,10 @@ export interface IArticle{
 
 export interface IComment{
     cid: number,
-    username: string,
+    author: {
+        username: string,
+        avatar: string
+    }
     text: string
     timestamp: number;
 }

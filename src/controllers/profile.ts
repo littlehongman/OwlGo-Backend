@@ -132,3 +132,14 @@ export const getDateOfBirth: RequestHandler = async(req, res) => {
 
     res.send(msg);
 }
+
+
+export const getAvatar = async(username: string) => {
+    const user: IProfile | null = await Profile.findOne({ username: username }, {avatar: 1});
+
+   
+    if (user !== null)
+        return user.avatar;
+    return "";
+
+}

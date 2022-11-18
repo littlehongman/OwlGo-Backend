@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Article } from '../models/Article'
 import { Profile } from '../models/Profile';
 import { IComment, IProfile } from '../utils/types';
+import { getAvatar } from './profile';
 
 // findOneAndUpdate (and its variants) return the document before the update by default, if you want the updated document, use new: true
 
@@ -13,7 +14,7 @@ export const getPosts: RequestHandler = async(req, res) => {
 
         if (isNaN(arg)){ // if params.id is username
             const username: string = req.params.id;
-            const userPosts = await Article.find({username: username});
+            const userPosts = await Article.find({'author.username': username});
 
 
             res.send({ articles: userPosts });
@@ -22,7 +23,6 @@ export const getPosts: RequestHandler = async(req, res) => {
         } 
         else{
             const postId: number = arg;
-            console.log(postId);
             const post = await Article.findOne({ pid: postId });
 
             res.send({ article: post });
@@ -36,7 +36,7 @@ export const getPosts: RequestHandler = async(req, res) => {
     const user: IProfile | null = await Profile.findOne({ username: username });
     const friends: string[] | undefined = user?.friends;
 
-    const posts = await Article.find({ $or: [ { username: { $in: friends } }, { username: username } ] })
+    const posts = await Article.find({ $or: [ { 'author.username': { $in: friends } }, { 'author.username': username } ] }).sort({ 'timestamp': -1 });
 
     res.send({ articles: posts });
 }
@@ -44,11 +44,13 @@ export const getPosts: RequestHandler = async(req, res) => {
 export const createPost: RequestHandler = async(req, res) => {
     const postNum: number = await Article.countDocuments({});
     const username: string = req.body.username;
-
-    
+ 
     const newPost = new Article({ 
         pid: postNum,
-        username: username,
+        author: {
+            username: username,
+            avatar: await getAvatar(username)
+        },
         text: req.body.text,
         img: "",
         timestamp: Date.now()
@@ -56,8 +58,7 @@ export const createPost: RequestHandler = async(req, res) => {
 
     await newPost.save();
 
-    const allPosts = await Article.find({ username: username });
-    //const allPosts = await getPosts(req, res, );
+    const allPosts = await Article.find({ 'author.username': username });
 
     res.send({ articles: allPosts });
 }
@@ -77,7 +78,10 @@ export const updatePost: RequestHandler = async(req, res) => {
         if (commentId == "-1"){
             const newComment: IComment = {
                 cid: post?.comments.length?? 0,
-                username: username,
+                author: {
+                    username: username,
+                    avatar: await getAvatar(username)
+                },
                 text: text,
                 timestamp: Date.now()
             }
@@ -91,7 +95,7 @@ export const updatePost: RequestHandler = async(req, res) => {
             // check if the user owned the comment
             const comment = post?.comments[commentId]
 
-            if (comment?.username !== username){
+            if (comment?.author.username !== username){
                 res.sendStatus(401);
                 return;
             }
