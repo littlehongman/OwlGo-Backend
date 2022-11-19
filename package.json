@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/RiceWebDevCourse/hw6-backend-littlehongman#readme",
   "dependencies": {
+    "@types/multer": "^1.4.7",
     "body-parser": "^1.20.1",
+    "cloudinary": "^1.32.0",
     "cookie-parser": "^1.4.6",
     "cookie-session": "^2.0.0",
     "cors": "^2.8.5",
@@ -30,6 +32,7 @@
     "isomorphic-fetch": "^3.0.0",
     "md5": "^2.3.0",
     "mongoose": "^6.7.1",
+    "multer": "^1.4.5-lts.1",
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-google-oidc": "^0.1.0"

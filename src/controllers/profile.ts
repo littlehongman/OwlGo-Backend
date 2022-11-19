@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { Profile } from '../models/Profile'
 import { IProfile } from '../utils/types';
+import { uploadImage } from '../utils/uploadCloudinary';
 
 export const getUserHeadline: RequestHandler = async(req, res, next) => {
     let username: string = ""
@@ -105,9 +106,10 @@ export const getUserAvatar: RequestHandler = async(req, res) => {
 
 export const updateAvatar: RequestHandler = async(req, res) => {
     const username = req.body.username;
-    const newAvatar = req.body.avatar;
 
-    const user = await Profile.findOneAndUpdate({ username: username }, { avatar: newAvatar }, { new: true });
+    const imageURL = uploadImage(req);
+
+    const user = await Profile.findOneAndUpdate({ username: username }, { avatar: imageURL }, { new: true });
 
     const msg = { username: username, avatar: user?.avatar };
 
@@ -133,7 +135,18 @@ export const getDateOfBirth: RequestHandler = async(req, res) => {
     res.send(msg);
 }
 
+export const getProfile: RequestHandler = async(req, res) => {
+    const username = req.body.username;
 
+    const user: IProfile | null = await Profile.findOne({ 'username': username });
+
+    const msg = { username: username, profile: user };
+
+    res.status(200).send(msg);
+}
+
+
+// Help function for image upload
 export const getAvatar = async(username: string) => {
     const user: IProfile | null = await Profile.findOne({ username: username }, {avatar: 1});
 
@@ -143,3 +156,5 @@ export const getAvatar = async(username: string) => {
     return "";
 
 }
+
+
