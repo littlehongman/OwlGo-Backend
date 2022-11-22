@@ -91,13 +91,14 @@ export const updatePost: RequestHandler = async(req, res) => {
     // Check if comments 
     if (req.body.commentId !== undefined){
         const commentId = req.body.commentId;
+
         
-        if (commentId == "-1"){
+        if (commentId === "-1"){
             const newComment: IComment = {
-                cid: post?.comments.length?? 0,
+                cid: post?.comments.length!,
                 author: {
                     username: username,
-                    avatar: await getAvatar(username)
+                    avatar: req.body.avatar
                 },
                 text: text,
                 timestamp: Date.now()
@@ -118,7 +119,7 @@ export const updatePost: RequestHandler = async(req, res) => {
             }
             else{
                 // update the comment
-                const newPost = await Article.findOneAndUpdate(
+                const updatedPost = await Article.findOneAndUpdate(
                     { pid: pid, 'comments.cid': commentId }, 
                     { 
                         $set: {
@@ -129,7 +130,7 @@ export const updatePost: RequestHandler = async(req, res) => {
                     { new: true }
                 )
 
-                res.send(newPost);
+                res.send({'article': updatedPost}); // 
                 return;
             }
         }
