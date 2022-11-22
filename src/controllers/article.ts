@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Article } from '../models/Article'
 import { Profile } from '../models/Profile';
 import { IComment, IProfile } from '../utils/types';
+import { uploadImage } from '../utils/uploadCloudinary';
 import { getAvatar } from './profile';
 
 // findOneAndUpdate (and its variants) return the document before the update by default, if you want the updated document, use new: true
@@ -33,34 +34,50 @@ export const getPosts: RequestHandler = async(req, res) => {
 
     // If no specify => return posts for current user
     const username: string = req.body.username;
-    const user: IProfile | null = await Profile.findOne({ username: username });
-    const friends: string[] | undefined = user?.friends;
+    // const user: IProfile | null = await Profile.findOne({ username: username });
+    // const friends: string[] | undefined = user?.friends;
 
-    const posts = await Article.find({ $or: [ { 'author.username': { $in: friends } }, { 'author.username': username } ] }).sort({ 'timestamp': -1 });
+    // const posts = await Article.find({ $or: [ { 'author.username': { $in: friends } }, { 'author.username': username } ] }).sort({ 'timestamp': -1 });
+    const result = await getAllPosts(username);
 
-    res.send({ articles: posts });
+    res.send({ articles: result.posts });
 }
 
 export const createPost: RequestHandler = async(req, res) => {
     const postNum: number = await Article.countDocuments({});
     const username: string = req.body.username;
- 
-    const newPost = new Article({ 
+    const userAvatar: string = await getAvatar(username);
+
+    let imageURL: any = "";
+
+    // console.log(req.file);
+    // console.log(req.body);
+
+    if (req.file !== undefined){
+        imageURL = await uploadImage(req);
+    }
+
+    
+    const newPost = await new Article({ 
         pid: postNum,
         author: {
             username: username,
-            avatar: await getAvatar(username)
+            avatar: userAvatar,
         },
         text: req.body.text,
-        img: "",
+        img: imageURL,
         timestamp: Date.now()
-    });
+    }).save();
 
-    await newPost.save();
+    // await newPost.save();
 
-    const allPosts = await Article.find({ 'author.username': username });
+    // const allPosts: any = await Article.find({ 'author.username': username });
 
-    res.send({ articles: allPosts });
+    // res.send({ articles: allPosts.posts });
+
+    const result = await getAllPosts(username);
+
+    res.send({ articles: result.posts });
 }
 
 export const updatePost: RequestHandler = async(req, res) => {
@@ -72,7 +89,7 @@ export const updatePost: RequestHandler = async(req, res) => {
     const text = req.body.text;
 
     // Check if comments 
-    if (req.body.commentId !== '0'){
+    if (req.body.commentId !== undefined){
         const commentId = req.body.commentId;
         
         if (commentId == "-1"){
@@ -120,7 +137,7 @@ export const updatePost: RequestHandler = async(req, res) => {
     // Update Post
 
      // check if the user owned the post
-     if (post?.username !== username){
+     if (post?.author.username !== username){
          res.sendStatus(401);
          return;
      }
@@ -130,3 +147,56 @@ export const updatePost: RequestHandler = async(req, res) => {
         res.send(newPost);
      }
 } 
+
+
+const getAllPosts = async(username: string) =>{
+  
+    const agg: any = [
+        {
+        '$match': {
+            'username': username
+        }
+        }, {
+        '$lookup': {
+            'from': 'articles', 
+            'let': {
+            'username': '$username', 
+            'friends': '$friends'
+            }, 
+            'pipeline': [
+            {
+                '$match': {
+                '$expr': {
+                    '$or': [
+                    {
+                        '$eq': [
+                        '$$username', '$author.username'
+                        ]
+                    }, {
+                        '$in': [
+                        '$author.username', '$$friends'
+                        ]
+                    }
+                    ]
+                }
+                }
+            }, {
+                '$sort': {
+                'timestamp': -1
+                }
+            }
+            ], 
+            'as': 'posts'
+        }
+        }, {
+        '$project': {
+            '_id': 0, 
+            'posts': 1
+        }
+        }
+    ];
+  
+  const result = await Profile.aggregate(agg);
+  
+  return result[0];
+}
