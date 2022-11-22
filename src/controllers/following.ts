@@ -127,10 +127,10 @@ const getFriendData = async(username: string) => {
             'pipeline': [
             {
                 '$project': {
-                '_id': 0, 
-                'username': 1, 
-                'headline': 1, 
-                'avatar': 1
+                    '_id': 0, 
+                    'username': 1, 
+                    'headline': 1, 
+                    'avatar': 1
                 }
             }
             ]

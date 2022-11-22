@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express';
+import { Article } from '../models/Article';
 import { Profile } from '../models/Profile'
 import { IProfile } from '../utils/types';
 import { uploadImage } from '../utils/uploadCloudinary';
@@ -56,6 +57,19 @@ export const updateEmail: RequestHandler = async(req, res) => {
     res.send(msg);
 }
 
+export const updatePhone: RequestHandler = async(req, res) => {
+    const username = req.body.username;
+    const newPhone = req.body.phone;
+
+    const user = await Profile.findOneAndUpdate({ username: username }, { phone: newPhone }, { new: true });
+
+    const msg = { username: username, phone: user?.phone };
+
+    res.send(msg);
+}
+
+
+
 export const getUserZipcode: RequestHandler = async(req, res) => {
     let username: string = "";
 
@@ -107,9 +121,12 @@ export const getUserAvatar: RequestHandler = async(req, res) => {
 export const updateAvatar: RequestHandler = async(req, res) => {
     const username = req.body.username;
 
-    const imageURL = uploadImage(req);
+    const imageURL = await uploadImage(req);
 
     const user = await Profile.findOneAndUpdate({ username: username }, { avatar: imageURL }, { new: true });
+    
+    // need to update all avatar from articles
+    await Article.updateMany({'author.username': username}, {'author.avatar': imageURL});
 
     const msg = { username: username, avatar: user?.avatar };
 
@@ -146,7 +163,7 @@ export const getProfile: RequestHandler = async(req, res) => {
 }
 
 
-// Help function for image upload
+// Help function for create new Post
 export const getAvatar = async(username: string) => {
     const user: IProfile | null = await Profile.findOne({ username: username }, {avatar: 1});
 
