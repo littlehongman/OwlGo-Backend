@@ -5,16 +5,22 @@ import cors from 'cors'
 import articleRoute from './routes/article'
 import profileRoute from './routes/profile'
 import followingRoute from './routes/following'
+
 import auth from './middlewares/auth'
-import passport from './middlewares/passport'
+import passportAuth from './middlewares/passport';
+
 import mongoose, { ConnectOptions } from "mongoose"
 
+import session from 'express-session'
+import cookieSession from 'cookie-session';
+import passport from 'passport'
+
+// Third-party config
 import "./config/cloudinary";
+import "./config/passport";
 
-
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "./utils/secrets";
 import 'dotenv/config'
-
+import { COOKIE_KEY } from './utils/secrets';
 
 const app: Application = express();
 const corsOption = {origin:"http://localhost:3000", credentials: true};
@@ -23,15 +29,9 @@ const corsOption = {origin:"http://localhost:3000", credentials: true};
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors(corsOption));
+app.use(express.json())
 
-// MongoDB
-// (async () => {
-//     const connector = mongoose.connect(connectionString);
-//     await (connector.then(async()=> {
-//         console.log("successfully");
-//     }));
-// })
-// ! operator tells the compiler to ignore the possibility of it being undefined
+
 const connectDB = async () => {
     try {
       await mongoose.connect(process.env.MONGO_URI!,  {
@@ -47,13 +47,34 @@ const connectDB = async () => {
 
 connectDB()
 
+// Set up cookieSession
+app.use(
+  cookieSession({
+    maxAge: 24 * 60 * 60 * 1000,
+    keys: [COOKIE_KEY],
+  })
+);
+
+// app.use(expressSession({
+//   secret: COOKIE_KEY,
+//   resave: true,
+//   saveUninitialized: true
+// }));
+
+// initialize passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 
 const hello = (req: Request, res: Response) => {
     res.send("Hello World");
 }
 
+
+
 app.get('/', hello);
-//app.use('/', passport);
+app.use('/', passportAuth);
 app.use('/', auth);
 
 

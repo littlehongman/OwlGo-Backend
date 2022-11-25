@@ -8,6 +8,7 @@ import { getAvatar } from './profile';
 // findOneAndUpdate (and its variants) return the document before the update by default, if you want the updated document, use new: true
 
 export const getPosts: RequestHandler = async(req, res) => {
+    // console.log(req.body.username);
     
     // If specify id => return all posts of the user
     if (req.params.id !== undefined){
@@ -199,5 +200,6 @@ const getAllPosts = async(username: string) =>{
   
   const result = await Profile.aggregate(agg);
   
+
   return result[0];
 }

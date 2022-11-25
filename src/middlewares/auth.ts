@@ -2,11 +2,15 @@ import express, { Router, Request, Response, NextFunction } from 'express';
 import { Profile } from '../models/Profile';
 import { User } from '../models/User';
 
+import passport from "passport";
+
 const md5 = require('md5');
 const router = Router();
 
 let sessionUser: {[key: string]: string} = {};
 let cookieKey = "sid";
+
+let googleUser: {[key: string]: string} = {};
 
 //let userObjs: {[key: string]: any} = {};
 
@@ -16,30 +20,51 @@ const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
        return res.sendStatus(401);
     }
 
+ 
     let sid = req.cookies[cookieKey];
 
     // no sid for cookie key
-    if (!sid) {
+    if (!sid && !req.user) {
         return res.sendStatus(401);
     }
 
-    let username = sessionUser[sid];
+    if (sid){
+        let username = sessionUser[sid];
 
-    // no username mapped to sid
-    if (username) {
-        req.body.username = username;
-        next(); //next line in app.js
+        // no username mapped to sid
+        if (username) {
+            req.body.username = username;
+            next(); //next line in app.js
+        }
+        else {
+            res.sendStatus(401)
+        }
+    }
+
+    else if (req.user){
+        //check if third-party login
+        if (req.user) {
+            const user: any = req.user
+        
+            req.body.username = user.username;  
+            // console.log(req.body);
+            next();
+        }
     }
     else {
-        return res.sendStatus(401)
+        res.sendStatus(401)
     }
+   
+
+
+    
 }
 
 
 const register = async(req: Request, res: Response) => {
     let username = req.body.username;
     let password = req.body.password;
-    console.log(username, password);
+    // console.log(username, password);
 
     // supply username and password
     if (!username || !password) {

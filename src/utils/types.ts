@@ -1,8 +1,11 @@
+import { Document } from "mongoose";
 
-export interface IUser{
+export type IUser = Document &{
 	username: string;
-	salt: string;
+	salt?: string;
 	hash?: string;
+    googleId?: string;
+    
 }
 
 export interface IProfile{
