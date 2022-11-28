@@ -26,10 +26,11 @@ const app: Application = express();
 const corsOption = {origin:"http://localhost:3000", credentials: true};
 
 // Dev Middlewares
-app.use(bodyParser.json());
+app.use(express.json())
+//app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors(corsOption));
-app.use(express.json())
+
 
 
 const connectDB = async () => {
