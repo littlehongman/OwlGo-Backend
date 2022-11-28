@@ -30,8 +30,17 @@ router.get("/auth/google", (req, res) => {
   passport.authenticate("google", { // strategy: google
     scope: ["email", "profile"],
     state: state,
+    session: false
   })(req, res);
 });
+
+// router.get(
+//   "/auth/google",
+//   passport.authenticate("google", {
+//     scope: ["email", "profile"],
+//     state: "login"
+//   })
+// );
 
 
 router.get("/auth/google/redirect", passport.authenticate("google" , {failureRedirect: 'http://localhost:3000/' }), async(req, res) => {

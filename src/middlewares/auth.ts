@@ -27,7 +27,7 @@ const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
     if (!sid && !req.user) {
         return res.sendStatus(401);
     }
-
+    
     if (sid){
         let username = sessionUser[sid];
 
@@ -40,16 +40,15 @@ const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
             res.sendStatus(401)
         }
     }
-
+    
     else if (req.user){
         //check if third-party login
-        if (req.user) {
-            const user: any = req.user
+        const user: any = req.user
+    
+        req.body.username = user.username;  
+        // console.log(req.body);
+        next();
         
-            req.body.username = user.username;  
-            // console.log(req.body);
-            next();
-        }
     }
     else {
         res.sendStatus(401)
@@ -154,6 +153,9 @@ const logout = (req: Request, res: Response) => {
     delete sessionUser[sid]; 
 
     res.clearCookie('sid');
+    res.clearCookie('express:sess');
+    res.clearCookie('express:sess.sig');
+    
     res.sendStatus(200);
 }
 
