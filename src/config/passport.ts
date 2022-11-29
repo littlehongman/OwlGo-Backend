@@ -43,7 +43,8 @@ passport.use(
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
       callbackURL: "/auth/google/redirect",
-    	passReqToCallback: true
+      passReqToCallback: true,
+	  proxy: true
     },
     async (req, accessToken, refreshToken, profile, done) => {
 			//done(null, profile);
