@@ -140,7 +140,7 @@ const login = async(req: Request, res: Response) => {
         // TODO: create session id, use sessionUser to map sid to user username 
         let sid = md5(username) // CHANGE THIS! 
         sessionUser[sid] = username;
-
+        console.log(username);
 	    // Adding cookie for session id
         res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true });
         let msg = {username: username, result: 'success'};
