@@ -2,7 +2,7 @@ import { Router } from "express";
 import cookieSession from "cookie-session";
 import passport from "passport";
 import passportGoogle from "passport-google-oauth20";
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "../utils/secrets";
+import { BASE_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "../utils/secrets";
 import { User } from "../models/User";
 import { Profile } from "../models/Profile";
 import { IUser } from "../utils/types";
@@ -43,18 +43,18 @@ router.get("/auth/google", (req, res) => {
 // );
 
 
-router.get("/auth/google/redirect", passport.authenticate("google" , {failureRedirect: 'http://localhost:3000/' }), async(req, res) => {
+router.get("/auth/google/redirect", passport.authenticate("google" , {failureRedirect: BASE_URL }), async(req, res) => {
   // const session: any = req.session;
   // const user: any = session.passport;
   const googleUser: any = req.user
 
   
   if (req.query.state === 'login'){
-      res.redirect(`http://localhost:3000/main?username=${googleUser.username}`);
+      res.redirect(`${BASE_URL}/main?username=${googleUser.username}`);
   }
 
   else{
-      res.redirect("http://localhost:3000/profile");
+      res.redirect(`${BASE_URL}/profile`);
   }
 });
 
