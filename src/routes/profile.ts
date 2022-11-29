@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { getUserHeadline, updateHeadline, getUserEmail, updateEmail, getUserZipcode, updateZipcode, getUserAvatar, updateAvatar, getDateOfBirth, getProfile, updatePhone } from '../controllers/profile';
+import { getUserHeadline, updateHeadline, getUserEmail, updateEmail, getUserZipcode, updateZipcode, getUserAvatar, updateAvatar, getDateOfBirth, getProfile, updatePhone, getAccount, unlinkGoogle } from '../controllers/profile';
 
 
 const router = Router();
@@ -24,6 +24,9 @@ router.put('/avatar', upload.single('image'), updateAvatar)
 router.get('/profile', getProfile)
 
 router.put('/phone', updatePhone);
+
+router.get('/account', getAccount);
+router.put('/google/unlink', unlinkGoogle);
 // router.put('/profile', updateProfile)
 
 

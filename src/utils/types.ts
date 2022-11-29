@@ -8,7 +8,7 @@ export type IUser = Document &{
     
 }
 
-export interface IProfile{
+export type IProfile = Document & {
     // id: number,
 	username: string;
     name: string;

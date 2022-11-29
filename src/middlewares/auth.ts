@@ -27,12 +27,15 @@ const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
     if (!sid && !req.user) {
         return res.sendStatus(401);
     }
-    
+
+    //console.log(sid);
     if (sid){
         let username = sessionUser[sid];
-
+        
+        // console.log(username);
         // no username mapped to sid
         if (username) {
+            
             req.body.username = username;
             next(); //next line in app.js
         }
@@ -42,6 +45,7 @@ const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
     }
     
     else if (req.user){
+        // console.log(req.user);
         //check if third-party login
         const user: any = req.user
     

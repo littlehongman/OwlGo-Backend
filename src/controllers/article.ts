@@ -8,7 +8,6 @@ import { getAvatar } from './profile';
 // findOneAndUpdate (and its variants) return the document before the update by default, if you want the updated document, use new: true
 
 export const getPosts: RequestHandler = async(req, res) => {
-    // console.log(req.body.username);
     
     // If specify id => return all posts of the user
     if (req.params.id !== undefined){
@@ -203,3 +202,19 @@ const getAllPosts = async(username: string) =>{
 
   return result[0];
 }
+
+
+export const updateTest: RequestHandler = async(req, res) => {
+    await Article.updateMany(
+        { },
+        { $set: { "comments.$[elem].author.username" : "Barry" } },
+        { arrayFilters: [ { "elem.author.username": {"$eq": "Jack"} } ] }
+    )
+
+    await Article.updateMany(
+        { 'author.username': "Barry"},
+        { $set: { "author.username" : "Mack" } },
+    )
+
+    res.sendStatus(200);
+} 

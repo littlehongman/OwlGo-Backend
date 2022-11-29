@@ -1,7 +1,8 @@
 import { RequestHandler } from 'express';
 import { Article } from '../models/Article';
 import { Profile } from '../models/Profile'
-import { IProfile } from '../utils/types';
+import { User } from '../models/User';
+import { IProfile, IUser } from '../utils/types';
 import { uploadImage } from '../utils/uploadCloudinary';
 
 export const getUserHeadline: RequestHandler = async(req, res, next) => {
@@ -160,6 +161,41 @@ export const getProfile: RequestHandler = async(req, res) => {
     const msg = { username: username, profile: user };
 
     res.status(200).send(msg);
+}
+
+export const getAccount: RequestHandler = async(req, res) => {
+    const username = req.body.username;
+    const account: any = {};
+
+    const user: IUser | null = await User.findOne({ 'username': username });
+
+
+    if (user!['salt'] !== undefined){
+        account.local = true; // this stands for ordinary registered user
+    }
+    else{
+        account.local = false;
+    }
+
+    if (user!['googleId'] !== undefined){
+        account.googleId = true;
+    }
+    else{
+        account.googleId = false;
+    }
+
+    //console.log(account);
+    const msg = { username: username, account: account };
+
+    res.status(200).send(msg);
+} 
+
+export const unlinkGoogle: RequestHandler = async(req, res) => {
+    const username = req.body.username;
+
+    await User.findOneAndUpdate({ username: username }, { $unset: { googleId: 1 } });
+
+    res.sendStatus(200);
 }
 
 
