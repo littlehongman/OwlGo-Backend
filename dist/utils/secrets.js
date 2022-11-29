@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CLOUDINARY_API_SECRET = exports.CLOUDINARY_API_KEY = exports.CLOUDINARY_CLOUD_NAME = exports.COOKIE_KEY = exports.GOOGLE_CLIENT_SECRET = exports.GOOGLE_CLIENT_ID = void 0;
+require("dotenv/config");
+exports.GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+exports.GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+exports.COOKIE_KEY = process.env.COOKIE_KEY;
+exports.CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
+exports.CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
+exports.CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;

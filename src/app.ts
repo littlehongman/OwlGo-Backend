@@ -23,7 +23,7 @@ import 'dotenv/config'
 import { COOKIE_KEY } from './utils/secrets';
 
 const app: Application = express();
-const corsOption = {origin:"http://localhost:3000", credentials: true};
+const corsOption = {origin:"https://owlgo-final.surge.sh/", credentials: true};
 
 // Dev Middlewares
 app.use(express.json())

@@ -7,8 +7,9 @@ exports.User = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const userSchema = new mongoose_1.default.Schema({
     username: { type: String, required: [true, 'Username is required'] },
-    salt: { type: String, required: true },
-    hash: { type: String, require: true },
+    salt: { type: String },
+    hash: { type: String },
+    googleId: { type: String }
 });
 exports.User = mongoose_1.default.model('user', userSchema); // user ==> collection name
 // module.exports = { userSchema }

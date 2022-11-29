@@ -9,8 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDateOfBirth = exports.updateAvatar = exports.getUserAvatar = exports.updateZipcode = exports.getUserZipcode = exports.updateEmail = exports.getUserEmail = exports.updateHeadline = exports.getUserHeadline = void 0;
+exports.getAvatar = exports.unlinkGoogle = exports.getAccount = exports.getProfile = exports.getDateOfBirth = exports.updateAvatar = exports.getUserAvatar = exports.updateZipcode = exports.getUserZipcode = exports.updatePhone = exports.updateEmail = exports.getUserEmail = exports.updateHeadline = exports.getUserHeadline = void 0;
+const Article_1 = require("../models/Article");
 const Profile_1 = require("../models/Profile");
+const User_1 = require("../models/User");
+const uploadCloudinary_1 = require("../utils/uploadCloudinary");
 const getUserHeadline = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let username = "";
     if (req.params.username) {
@@ -51,6 +54,14 @@ const updateEmail = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     res.send(msg);
 });
 exports.updateEmail = updateEmail;
+const updatePhone = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const username = req.body.username;
+    const newPhone = req.body.phone;
+    const user = yield Profile_1.Profile.findOneAndUpdate({ username: username }, { phone: newPhone }, { new: true });
+    const msg = { username: username, phone: user === null || user === void 0 ? void 0 : user.phone };
+    res.send(msg);
+});
+exports.updatePhone = updatePhone;
 const getUserZipcode = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let username = "";
     if (req.params.user) {
@@ -87,8 +98,10 @@ const getUserAvatar = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.getUserAvatar = getUserAvatar;
 const updateAvatar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const username = req.body.username;
-    const newAvatar = req.body.avatar;
-    const user = yield Profile_1.Profile.findOneAndUpdate({ username: username }, { avatar: newAvatar }, { new: true });
+    const imageURL = yield (0, uploadCloudinary_1.uploadImage)(req);
+    const user = yield Profile_1.Profile.findOneAndUpdate({ username: username }, { avatar: imageURL }, { new: true });
+    // need to update all avatar from articles
+    yield Article_1.Article.updateMany({ 'author.username': username }, { 'author.avatar': imageURL });
     const msg = { username: username, avatar: user === null || user === void 0 ? void 0 : user.avatar };
     res.send(msg);
 });
@@ -106,3 +119,45 @@ const getDateOfBirth = (req, res) => __awaiter(void 0, void 0, void 0, function*
     res.send(msg);
 });
 exports.getDateOfBirth = getDateOfBirth;
+const getProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const username = req.body.username;
+    const user = yield Profile_1.Profile.findOne({ 'username': username });
+    const msg = { username: username, profile: user };
+    res.status(200).send(msg);
+});
+exports.getProfile = getProfile;
+const getAccount = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const username = req.body.username;
+    const account = {};
+    const user = yield User_1.User.findOne({ 'username': username });
+    if (user['salt'] !== undefined) {
+        account.local = true; // this stands for ordinary registered user
+    }
+    else {
+        account.local = false;
+    }
+    if (user['googleId'] !== undefined) {
+        account.googleId = true;
+    }
+    else {
+        account.googleId = false;
+    }
+    //console.log(account);
+    const msg = { username: username, account: account };
+    res.status(200).send(msg);
+});
+exports.getAccount = getAccount;
+const unlinkGoogle = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const username = req.body.username;
+    yield User_1.User.findOneAndUpdate({ username: username }, { $unset: { googleId: 1 } });
+    res.sendStatus(200);
+});
+exports.unlinkGoogle = unlinkGoogle;
+// Help function for create new Post
+const getAvatar = (username) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield Profile_1.Profile.findOne({ username: username }, { avatar: 1 });
+    if (user !== null)
+        return user.avatar;
+    return "";
+});
+exports.getAvatar = getAvatar;

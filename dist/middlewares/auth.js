@@ -16,6 +16,7 @@ const md5 = require('md5');
 const router = (0, express_1.Router)();
 let sessionUser = {};
 let cookieKey = "sid";
+let googleUser = {};
 //let userObjs: {[key: string]: any} = {};
 const isLoggedIn = (req, res, next) => {
     // likely didn't install cookie parser
@@ -24,23 +25,38 @@ const isLoggedIn = (req, res, next) => {
     }
     let sid = req.cookies[cookieKey];
     // no sid for cookie key
-    if (!sid) {
+    if (!sid && !req.user) {
         return res.sendStatus(401);
     }
-    let username = sessionUser[sid];
-    // no username mapped to sid
-    if (username) {
-        req.body.username = username;
-        next(); //next line in app.js
+    //console.log(sid);
+    if (sid) {
+        let username = sessionUser[sid];
+        // console.log(username);
+        // no username mapped to sid
+        if (username) {
+            req.body.username = username;
+            next(); //next line in app.js
+        }
+        else {
+            res.sendStatus(401);
+        }
+    }
+    else if (req.user) {
+        // console.log(req.user);
+        //check if third-party login
+        const user = req.user;
+        req.body.username = user.username;
+        // console.log(req.body);
+        next();
     }
     else {
-        return res.sendStatus(401);
+        res.sendStatus(401);
     }
 };
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let username = req.body.username;
     let password = req.body.password;
-    console.log(username, password);
+    // console.log(username, password);
     // supply username and password
     if (!username || !password) {
         return res.sendStatus(400);
@@ -48,8 +64,8 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // 1. First check if username if already in DB
     const userExist = yield Profile_1.Profile.findOne({ username: username });
     if (userExist !== null) {
-        let msg = { username: username, result: 'success' };
-        res.send(msg);
+        let msg = "Username alreay taken";
+        res.status(409).send(msg);
         return;
     }
     let salt = username + new Date().getTime();
@@ -64,11 +80,11 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const newProfile = new Profile_1.Profile({
         //id: userNum,
         username: username,
-        name: "",
-        email: "www@rice.edu",
-        phone: "123-123-1234",
-        birthday: Date.now().toString(),
-        zipCode: "77005",
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone,
+        birthday: req.body.birthday,
+        zipCode: req.body.zipCode,
         avatar: "https://api.lorem.space/image/face?w=150&h=150&hash=" + userNum,
         friends: [],
         headline: "Actively being loser"
@@ -87,7 +103,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //let user = userObjs[username];
     const user = yield User_1.User.findOne({ username: username });
     if (!user) {
-        return res.sendStatus(401);
+        return res.status(404);
     }
     // TODO: create hash using md5, user salt and request password, check if hash matches user hash
     let hash = md5((user === null || user === void 0 ? void 0 : user.salt) + password);
@@ -98,16 +114,19 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         // Adding cookie for session id
         res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true });
         let msg = { username: username, result: 'success' };
-        res.send(msg);
+        res.status(200).send(msg);
     }
     else {
-        res.sendStatus(401);
+        res.status(403).send("Wrong password");
     }
 });
 const logout = (req, res) => {
     // cookie already checked in isLogin
     let sid = req.cookies[cookieKey];
     delete sessionUser[sid];
+    res.clearCookie('sid');
+    res.clearCookie('express:sess');
+    res.clearCookie('express:sess.sig');
     res.sendStatus(200);
 };
 const changePassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -117,7 +136,6 @@ const changePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
     let hash = md5(salt + newPassword);
     const user = yield User_1.User.findOneAndUpdate({ username: username }, { salt: salt, hash: hash }, { new: true });
     const msg = { username: username, result: 'success' };
-    console.log(user);
     res.send(msg);
 });
 router.post('/login', login);
