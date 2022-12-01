@@ -142,8 +142,8 @@ const login = async(req: Request, res: Response) => {
         sessionUser[sid] = username;
         console.log(username);
 	    // Adding cookie for session id
-        res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true, sameSite: 'none', secure: true });
-        let msg = {username: username, result: 'success'};
+        res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true, secure: true });
+        let msg = { username: username, result: 'success'};
         res.status(200).send(msg);
     }
     else {
