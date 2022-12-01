@@ -45,7 +45,7 @@ const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
     }
     
     else if (req.user){
-        // console.log(req.user);
+        console.log(req.user);
         //check if third-party login
         const user: any = req.user
     
