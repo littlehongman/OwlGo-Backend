@@ -3,6 +3,7 @@ import { Profile } from '../models/Profile';
 import { User } from '../models/User';
 
 import passport from "passport";
+import { BASE_URL, COOKIE_KEY } from '../utils/secrets';
 
 const md5 = require('md5');
 const router = Router();
@@ -178,6 +179,44 @@ const changePassword = async(req: Request, res: Response) => {
 
     res.send(msg);
 }
+
+router.get("/auth/google", (req, res) => {
+    const state: string = <string> req.query.state!;
+    
+    passport.authenticate("google", { // strategy: google
+      scope: ["email", "profile"],
+      state: state,
+      session: false
+    })(req, res);
+});
+  
+  // router.get(
+  //   "/auth/google",
+  //   passport.authenticate("google", {
+  //     scope: ["email", "profile"],
+  //     state: "login"
+  //   })
+  // );
+  
+  
+router.get("/auth/google/redirect", passport.authenticate("google" , {failureRedirect: BASE_URL }), async(req, res) => {
+// const session: any = req.session;
+// const user: any = session.passport;
+    const googleUser: any = req.user
+
+
+    if (req.query.state === 'login'){
+        let sid = md5(googleUser.username) // CHANGE THIS! 
+        sessionUser[sid] = googleUser.username;
+
+        res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true, secure: true, sameSite: 'none'});//, secure: true });
+        res.redirect(`${BASE_URL}/main?username=${googleUser.username}`);
+    }
+
+    else{
+        res.redirect(`${BASE_URL}/profile`);
+    }
+});
 
 
 router.post('/login', login);

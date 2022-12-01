@@ -7,7 +7,7 @@ import profileRoute from './routes/profile'
 import followingRoute from './routes/following'
 
 import auth from './middlewares/auth'
-import passportAuth from './middlewares/passport';
+//import passportAuth from './middlewares/passport';
 
 import mongoose, { ConnectOptions } from "mongoose"
 
@@ -50,14 +50,14 @@ const connectDB = async () => {
 connectDB()
 
 // Set up cookieSession
-app.use(
-  cookieSession({
-    maxAge: 24 * 60 * 60 * 1000,
-    keys: [COOKIE_KEY],
-    secure: true,
-    sameSite: "none",
-  })
-);
+// app.use(
+//   cookieSession({
+//     maxAge: 24 * 60 * 60 * 1000,
+//     keys: [COOKIE_KEY],
+//     secure: true,
+//     sameSite: "none",
+//   })
+// );
 
 // app.use(
 //   session({
@@ -93,7 +93,7 @@ const hello = (req: Request, res: Response) => {
 
 
 app.get('/', hello);
-app.use('/', passportAuth);
+//app.use('/', passportAuth);
 app.use('/', auth);
 
 
