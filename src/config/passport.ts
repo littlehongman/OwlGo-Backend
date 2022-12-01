@@ -42,9 +42,9 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: "/auth/google/redirect",
+      callbackURL: "https://owl-go.herokuapp.com/auth/google/redirect",
       passReqToCallback: true,
-	  proxy: true
+	  //proxy: true
     },
     async (req, accessToken, refreshToken, profile, done) => {
 			//done(null, profile);

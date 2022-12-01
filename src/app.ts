@@ -30,7 +30,7 @@ app.use(express.json())
 //app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors(corsOption));
-app.enable("trust proxy");
+//app.enable("trust proxy");
 
 
 
@@ -50,26 +50,29 @@ const connectDB = async () => {
 connectDB()
 
 // Set up cookieSession
-// app.use(
-//   cookieSession({
-//     maxAge: 24 * 60 * 60 * 1000,
-//     keys: [COOKIE_KEY],
-//     secure: true,
-//     sameSite: "none",
-//   })
-// );
-
 app.use(
-  session({
-    secret: "secretcode",
-    resave: true,
-    saveUninitialized: true,
-    cookie: {
-      sameSite: "none",
-      secure: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7 // One Week
-    }
-}))
+  cookieSession({
+    maxAge: 24 * 60 * 60 * 1000,
+    keys: [COOKIE_KEY],
+    secure: true,
+    sameSite: "none",
+  })
+);
+
+// app.use(
+//   session({
+//     secret: "secretcode",
+//     resave: true,
+//     saveUninitialized: true,
+//     // cookie: {
+//     //   // sameSite: "none",
+//     //   // secure: true,
+
+//     //   //domain: "myapp.vercel.app"
+//     //   //httpOnly: true
+//     //   maxAge: 1000 * 60 * 60 * 24 * 7 // One Week
+//     // }
+// }))
 
 // app.use(expressSession({
 //   secret: COOKIE_KEY,

@@ -142,7 +142,7 @@ const login = async(req: Request, res: Response) => {
         sessionUser[sid] = username;
         console.log(username);
 	    // Adding cookie for session id
-        res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true, secure: true });
+        res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true});//, secure: true });
         let msg = { username: username, result: 'success'};
         res.status(200).send(msg);
     }
@@ -154,11 +154,13 @@ const login = async(req: Request, res: Response) => {
 const logout = (req: Request, res: Response) => {
     // cookie already checked in isLogin
     let sid = req.cookies[cookieKey];
+    console.log(sid);
     delete sessionUser[sid]; 
 
     res.clearCookie('sid');
     res.clearCookie('express:sess');
     res.clearCookie('express:sess.sig');
+    res.clearCookie('connect.sid');
     
     res.sendStatus(200);
 }
