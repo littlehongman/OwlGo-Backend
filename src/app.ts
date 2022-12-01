@@ -20,10 +20,10 @@ import "./config/cloudinary";
 import "./config/passport";
 
 import 'dotenv/config'
-import { COOKIE_KEY } from './utils/secrets';
+import { BASE_URL, COOKIE_KEY } from './utils/secrets';
 
 const app: Application = express();
-const corsOption = {origin:"http://localhost:3000", credentials: true};
+const corsOption = {origin:BASE_URL, credentials: true};
 
 // Dev Middlewares
 app.use(express.json())
