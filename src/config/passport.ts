@@ -3,7 +3,7 @@ import passportGoogle from "passport-google-oauth20";
 import { Article } from "../models/Article";
 import { Profile } from "../models/Profile";
 import { User } from "../models/User";
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "../utils/secrets";
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, MODE } from "../utils/secrets";
 import { IProfile, IUser } from "../utils/types";
 const GoogleStrategy = passportGoogle.Strategy;
 
@@ -42,7 +42,7 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: "https://owl-go.herokuapp.com/auth/google/redirect",
+      callbackURL: MODE === "development"? "http://localhost:4000/auth/google/redirect" : "https://owl-go.herokuapp.com/auth/google/redirect",
       passReqToCallback: true,
 	  //proxy: true
     },
@@ -101,19 +101,20 @@ passport.use(
 				}
 
 				else{
+					console.log(currentUser, googleUser);
 					const currentProfile: IProfile | null = await Profile.findOne({ username: username });
 					const googleProfile: IProfile | null = await Profile.findOne({username: googleUser.username });
 
-					// Merge Posts
+					// Merge Comments
 					await Article.updateMany(
 						{ },
 						{ $set: { "comments.$[elem].author.username" : username, "comments.$[elem].author.avatar": currentProfile!.avatar} },
 						{ arrayFilters: [ { "elem.author.username": {"$eq": googleUser.username} } ] }
 					)
 
-					// Merge Comments
+					// Merge Articles
 					await Article.updateMany(
-						{ 'author.username': "Barry"},
+						{ 'author.username': googleUser.username },
 						{ $set: { "author.username" : username, 'author.avatar': currentProfile!.avatar} },
 					)
 

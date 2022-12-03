@@ -3,7 +3,7 @@ import { Profile } from '../models/Profile';
 import { User } from '../models/User';
 
 import passport from "passport";
-import { BASE_URL, COOKIE_KEY } from '../utils/secrets';
+import { BASE_URL, COOKIE_KEY, MODE } from '../utils/secrets';
 
 const md5 = require('md5');
 const router = Router();
@@ -107,7 +107,7 @@ const register = async(req: Request, res: Response) => {
         phone: req.body.phone,
         birthday: req.body.birthday,
         zipCode: req.body.zipCode,
-        avatar: "https://api.lorem.space/image/face?w=150&h=150&hash=" + userNum,
+        avatar: "https://res.cloudinary.com/hy5tq5fzy/image/upload/v1670091793/blank-profile-picture-973460__480_w245yt.webp",
         friends: [],
         headline: "Actively being loser"
     })
@@ -143,7 +143,14 @@ const login = async(req: Request, res: Response) => {
         sessionUser[sid] = username;
         console.log(username);
 	    // Adding cookie for session id
-        res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true, secure: true, sameSite: 'none'});//, secure: true });
+        
+        if (MODE === "development"){
+            res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true});//, secure: true });
+        }
+        else{
+            res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true, secure: true, sameSite: 'none'});//, secure: true });
+        }
+    
         let msg = { username: username, result: 'success'};
         res.status(200).send(msg);
     }
@@ -190,14 +197,6 @@ router.get("/auth/google", (req, res) => {
     })(req, res);
 });
   
-  // router.get(
-  //   "/auth/google",
-  //   passport.authenticate("google", {
-  //     scope: ["email", "profile"],
-  //     state: "login"
-  //   })
-  // );
-  
   
 router.get("/auth/google/redirect", passport.authenticate("google" , {failureRedirect: BASE_URL }), async(req, res) => {
 // const session: any = req.session;
@@ -209,7 +208,14 @@ router.get("/auth/google/redirect", passport.authenticate("google" , {failureRed
         let sid = md5(googleUser.username) // CHANGE THIS! 
         sessionUser[sid] = googleUser.username;
 
-        res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true, secure: true, sameSite: 'none'});//, secure: true });
+        if (MODE === "development"){
+            res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true});//, secure: true });
+        }
+        else{
+            res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true, secure: true, sameSite: 'none'});//, secure: true });
+        }
+
+        
         res.redirect(`${BASE_URL}/main?username=${googleUser.username}`);
     }
 

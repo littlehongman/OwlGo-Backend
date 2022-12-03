@@ -129,6 +129,13 @@ export const updateAvatar: RequestHandler = async(req, res) => {
     // need to update all avatar from articles
     await Article.updateMany({'author.username': username}, {'author.avatar': imageURL});
 
+    // update all avatar from comments
+    await Article.updateMany(
+        { },
+        { $set: { "comments.$[elem].author.username" : username, "comments.$[elem].author.avatar": imageURL} },
+        { arrayFilters: [ { "elem.author.username": {"$eq": username} } ] }
+    )
+
     const msg = { username: username, avatar: user?.avatar };
 
     res.send(msg);

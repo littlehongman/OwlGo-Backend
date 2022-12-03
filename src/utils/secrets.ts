@@ -9,3 +9,4 @@ export const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY as string;
 export const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET as string;
 
 export const BASE_URL = process.env.BASE_URL as string;
+export const MODE = process.env.MODE as string;
