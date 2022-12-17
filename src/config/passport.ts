@@ -21,6 +21,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser(async(user: any, done) => {
+	console.log("Fuck you")
 	User.findOne({ username: user.username }, (err: Error, user: IUser) => {
 		if (err) {
 			done(err, undefined);
@@ -77,7 +78,7 @@ passport.use(
 							username: username, 
 							email: profile.emails?.[0].value,
 							avatar: profile.photos?.[0].value,
-							friends: []
+							friends: ['Mack']
 						})
 	
 						newProfile.save();

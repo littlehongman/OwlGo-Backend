@@ -198,10 +198,11 @@ router.get("/auth/google", (req, res) => {
 });
   
   
-router.get("/auth/google/redirect", passport.authenticate("google" , {failureRedirect: BASE_URL }), async(req, res) => {
+router.get("/auth/google/redirect", passport.authenticate("google" , {failureRedirect: BASE_URL }), (req, res) => {
 // const session: any = req.session;
 // const user: any = session.passport;
     const googleUser: any = req.user
+    console.log(googleUser);
 
 
     if (req.query.state === 'login'){
