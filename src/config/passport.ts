@@ -5,15 +5,8 @@ import { Profile } from "../models/Profile";
 import { User } from "../models/User";
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, MODE } from "../utils/secrets";
 import { IProfile, IUser } from "../utils/types";
+import { getRandomString } from "../utils/random";
 const GoogleStrategy = passportGoogle.Strategy;
-
-const getRandomString = (num: number) => {
-	const arr = ['1','2','3','4','5','6','7','8','9','0','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
-
-	const shuffled = [...arr].sort(() => 0.5 - Math.random());
-  
-	return shuffled.slice(0, num).join('');
-}
 
 
 passport.serializeUser((user, done) => {
@@ -21,7 +14,6 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser(async(user: any, done) => {
-	console.log("Fuck you")
 	User.findOne({ username: user.username }, (err: Error, user: IUser) => {
 		if (err) {
 			done(err, undefined);
@@ -48,8 +40,10 @@ passport.use(
 	  //proxy: true
     },
     async (req, accessToken, refreshToken, profile, done) => {
-			//done(null, profile);
-        
+	// This part is verify callback
+	// done(error, user)
+	// done(null, user) => No error
+
     //   get profile details
     //   save profile details in db
 		try{
@@ -136,60 +130,6 @@ passport.use(
 
 					done(null, currentUser!);
 				}
-				
-				
-				
-				
-				// User.findOne({ username: username }, async (err: Error, currentUser: IUser) => { // first find the login user
-				// 	if (!currentUser || err) {
-				// 		done(err, undefined);
-				// 	}
-					
-				// 	User.findOne({ googleId: profile.id }, (err: Error, googleUser: IUser) => {
-				
-				// 		if (!googleUser || err){
-				// 			currentUser.googleId = profile.id;
-				// 			currentUser.save();
-
-				// 			done(null, currentUser);
-				// 		}
-				// 		else{ // merge
-				// 			Profile.findOne({ username: username }, (err: Error, currentProfile: IProfile) => {
-				// 				Profile.findOne({ username: googleUser.username }, (err: Error, googleProfile: IProfile) => {
-				// 					// Merge Posts
-				// 					Article.updateMany(
-				// 						{ },
-				// 						{ $set: { "comments.$[elem].author.username" : username, "comments.$[elem].author.avatar": currentProfile.avatar} },
-				// 						{ arrayFilters: [ { "elem.author.username": {"$eq": googleUser.username} } ] }
-				// 					)
-		
-				// 					// Merge Comments
-				// 					Article.updateMany(
-				// 						{ 'author.username': "Barry"},
-				// 						{ $set: { "author.username" : username, 'author.avatar': currentProfile.avatar} },
-				// 					)
-
-				// 					// Merge Following
-				// 					const friendUnion = [...new Set([...currentProfile.friends, ...googleProfile.friends])];
-				// 					currentProfile.friends = friendUnion.filter(u => u !== username);
-				// 					console.log(currentProfile.friends);
-				// 					currentProfile.save();
-									
-
-				// 					// Delete Account
-				// 					User.deleteOne({ username: googleUser.username});
-				// 					Profile.deleteOne({username: googleUser.username});
-
-				// 					currentUser.googleId = googleUser.googleId;
-				// 					currentUser.save();
-
-
-				// 					done(null, currentUser);
-				// 				});
-				// 			})
-				// 		}
-				// 	})
-				// });
 			}
 		}
 		catch (e: any){

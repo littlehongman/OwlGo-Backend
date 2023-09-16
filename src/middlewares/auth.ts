@@ -22,46 +22,26 @@ const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
     }
 
  
-    let sid = req.cookies[cookieKey];
+    let sessionId = req.cookies[cookieKey];
 
     // no sid for cookie key
-    if (!sid && !req.user) {
+    if (!sessionId) {
         return res.sendStatus(401);
     }
 
-    //console.log(sid);
-    if (sid){
-        let username = sessionUser[sid];
-        
-        // console.log(username);
-        // no username mapped to sid
-        if (username) {
-            
-            req.body.username = username;
-            next(); //next line in app.js
-        }
-        else {
-            res.sendStatus(401)
-        }
-    }
+
     
-    else if (req.user){
-        console.log(req.user);
-        //check if third-party login
-        const user: any = req.user
-    
-        req.body.username = user.username;  
-        // console.log(req.body);
-        next();
-        
+    let username = sessionUser[sessionId];
+
+    if (username) {
+        req.body.username = username;
+        next(); //next line in app.js
     }
     else {
         res.sendStatus(401)
     }
-   
-
-
     
+
 }
 
 
@@ -108,7 +88,7 @@ const register = async(req: Request, res: Response) => {
         birthday: req.body.birthday,
         zipCode: req.body.zipCode,
         avatar: "https://res.cloudinary.com/hy5tq5fzy/image/upload/v1670091793/blank-profile-picture-973460__480_w245yt.webp",
-        friends: [],
+        friends: ['Mack'],
         headline: "Actively being loser"
     })
     await newProfile.save();
@@ -138,17 +118,17 @@ const login = async(req: Request, res: Response) => {
     let hash = md5(user?.salt + password);
 
     if (hash === user?.hash) {
-        // TODO: create session id, use sessionUser to map sid to user username 
-        let sid = md5(username) // CHANGE THIS! 
-        sessionUser[sid] = username;
-        console.log(username);
-	    // Adding cookie for session id
-        
+        // Generate a session by the server, and store in the map 'sessionUser'
+        // sessionUser  Key: sessionId, Value: username
+        let sessionId = md5(username) 
+        sessionUser[sessionId] = username;
+	    
+        // Set and store the sessionId using cookie
         if (MODE === "development"){
-            res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true});//, secure: true });
+            res.cookie(cookieKey, sessionId, { maxAge: 3600 * 1000, httpOnly: true});//, secure: true });
         }
         else{
-            res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true, secure: true, sameSite: 'none'});//, secure: true });
+            res.cookie(cookieKey, sessionId, { maxAge: 3600 * 1000, httpOnly: true, secure: true, sameSite: 'none'});//, secure: true });
         }
     
         let msg = { username: username, result: 'success'};
@@ -166,9 +146,9 @@ const logout = (req: Request, res: Response) => {
     delete sessionUser[sid]; 
 
     res.clearCookie('sid');
-    res.clearCookie('express:sess');
-    res.clearCookie('express:sess.sig');
-    res.clearCookie('connect.sid');
+    // res.clearCookie('express:sess');
+    // res.clearCookie('express:sess.sig');
+    // res.clearCookie('connect.sid');
     
     res.sendStatus(200);
 }
@@ -206,21 +186,21 @@ router.get("/auth/google/redirect", passport.authenticate("google" , {failureRed
 
 
     if (req.query.state === 'login'){
-        let sid = md5(googleUser.username) // CHANGE THIS! 
-        sessionUser[sid] = googleUser.username;
+        let sessionId = md5(googleUser.username) // CHANGE THIS! 
+        sessionUser[sessionId] = googleUser.username;
 
         if (MODE === "development"){
-            res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true});//, secure: true });
+            res.cookie(cookieKey, sessionId, { maxAge: 3600 * 1000, httpOnly: true});
         }
         else{
-            res.cookie(cookieKey, sid, { maxAge: 3600 * 1000, httpOnly: true, secure: true, sameSite: 'none'});//, secure: true });
+            res.cookie(cookieKey, sessionId, { maxAge: 3600 * 1000, httpOnly: true, secure: true, sameSite: 'none'});//, secure: true });
         }
 
         
         res.redirect(`${BASE_URL}/main?username=${googleUser.username}`);
     }
 
-    else{
+    else{ // if it's not login, then redirect back to profile page
         res.redirect(`${BASE_URL}/profile`);
     }
 });
