@@ -60,14 +60,14 @@ export const addFriend: RequestHandler = async(req, res) => {
     const userExist = await Profile.findOne({ username: newUser });
     
     if (userExist === null){
-        res.sendStatus(404); // resources cannot find
+        res.status(404).send("Username not found");; // resources cannot find
 
         return;
     }
 
     // 2. check if newUser == current user
     if (username === newUser){
-        res.sendStatus(403); // forbidden
+        res.status(403).send("You cannot as yourself as friend"); // forbidden
 
         return;
     }
@@ -76,8 +76,7 @@ export const addFriend: RequestHandler = async(req, res) => {
     const duplicateUser = await Profile.findOne({ username: username, friends: newUser });
 
     if (duplicateUser !== null){
-        console.log(123);
-        res.sendStatus(409); // conflict
+        res.status(409).send("Already a friend with the user");; // conflict
 
         return;
     }
@@ -109,32 +108,39 @@ export const deleteFriend: RequestHandler = async(req, res) => {
 
 
 const getFriendData = async(username: string) => {
+
+    // Use the MongoDB aggregate pipeline
+    // Get all information about the user's friends
+
     const agg = [
         {
-        '$match': {
-            'username': username
-        }
-        }, {
-        '$project': {
-            'friends': 1
-        }
-        }, {
-        '$lookup': {
-            'from': 'profiles', 
-            'localField': 'friends', 
-            'foreignField': 'username', 
-            'as': 'friends', 
-            'pipeline': [
-            {
-                '$project': {
-                    '_id': 0, 
-                    'username': 1, 
-                    'headline': 1, 
-                    'avatar': 1
-                }
+            '$match': { // First find the user document (Only one)
+                'username': username
             }
-            ]
-        }
+        }, 
+        {
+            '$project': { // Project the friend column
+                'friends': 1
+            }
+        }, 
+        {
+            '$lookup': { // Perform Self JOIN on table 'profiles'
+                'from': 'profiles', 
+                // Match the values from the "friends" list from table 'profile' to the 'username' column
+                'localField': 'friends', 
+                'foreignField': 'username', 
+                'as': 'friends', // New array name
+                'pipeline': [
+                    {
+                        '$project': { // Project these columns
+                            '_id': 0, 
+                            'username': 1, 
+                            'headline': 1, 
+                            'avatar': 1
+                        }
+                    }
+                ]
+            }
         }
     ];
     

@@ -19,7 +19,7 @@ export const getUserHeadline: RequestHandler = async(req, res, next) => {
 
     const msg = { username: username, headline: user?.headline };
    
-    res.send(msg);
+    res.status(200).send(msg);
 };
 
 export const updateHeadline: RequestHandler = async(req, res) => {
@@ -27,7 +27,7 @@ export const updateHeadline: RequestHandler = async(req, res) => {
 
     const updatedUser = await Profile.findOneAndUpdate({username: req.body.username}, { headline: newHeadline }, { new: true });
     
-    res.send({ username: updatedUser?.username, headline: updatedUser?.headline });
+    res.status(200).send({ username: updatedUser?.username, headline: updatedUser?.headline });
 }
 
 export const getUserEmail: RequestHandler = async(req, res) => {
@@ -44,7 +44,7 @@ export const getUserEmail: RequestHandler = async(req, res) => {
     const user: IProfile | null = await Profile.findOne({ username: username });
     const msg = { username: username, email: user?.email };
 
-    res.send(msg);
+    res.status(200).send(msg);
 }
 
 export const updateEmail: RequestHandler = async(req, res) => {
@@ -55,7 +55,7 @@ export const updateEmail: RequestHandler = async(req, res) => {
 
     const msg = { username: username, email: user?.email };
 
-    res.send(msg);
+    res.status(200).send(msg);
 }
 
 export const updatePhone: RequestHandler = async(req, res) => {
@@ -66,7 +66,7 @@ export const updatePhone: RequestHandler = async(req, res) => {
 
     const msg = { username: username, phone: user?.phone };
 
-    res.send(msg);
+    res.status(200).send(msg);
 }
 
 
@@ -86,7 +86,7 @@ export const getUserZipcode: RequestHandler = async(req, res) => {
 
     const msg = { username: username, zipcode: user?.zipCode };
 
-    res.send(msg);
+    res.status(200).send(msg);
 }
 
 export const updateZipcode: RequestHandler = async(req, res) => {
@@ -116,7 +116,7 @@ export const getUserAvatar: RequestHandler = async(req, res) => {
 
     const msg = { username: username, avatar: user?.avatar };
 
-    res.send(msg);
+    res.status(200).send(msg);
 }
 
 export const updateAvatar: RequestHandler = async(req, res) => {
@@ -138,7 +138,7 @@ export const updateAvatar: RequestHandler = async(req, res) => {
 
     const msg = { username: username, avatar: user?.avatar };
 
-    res.send(msg);
+    res.status(200).send(msg);
 }
 
 
@@ -157,7 +157,7 @@ export const getDateOfBirth: RequestHandler = async(req, res) => {
 
     const msg = { username: username, dob: user?.birthday };
 
-    res.send(msg);
+    res.status(200).send(msg);
 }
 
 export const getProfile: RequestHandler = async(req, res) => {
@@ -202,19 +202,19 @@ export const unlinkGoogle: RequestHandler = async(req, res) => {
 
     await User.findOneAndUpdate({ username: username }, { $unset: { googleId: 1 } });
 
-    res.sendStatus(200);
+    res.status(200).send("Unlink successful");
 }
 
 
-// Help function for create new Post
+// Helper function for create new Post
 export const getAvatar = async(username: string) => {
     const user: IProfile | null = await Profile.findOne({ username: username }, {avatar: 1});
 
    
     if (user !== null)
         return user.avatar;
-    return "";
 
+    return "";
 }
 
 

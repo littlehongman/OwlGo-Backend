@@ -13,22 +13,20 @@ export const getPosts: RequestHandler = async(req, res) => {
     if (req.params.id !== undefined){
         const arg = parseInt(req.params.id);
 
+        // Get the articles that belong this username
         if (isNaN(arg)){ // if params.id is username
             const username: string = req.params.id;
             const userPosts = await Article.find({'author.username': username});
 
 
-            res.send({ articles: userPosts });
-
-            return
+            res.status(200).send({ articles: userPosts });
         } 
+        // Get the article with the id
         else{
             const postId: number = arg;
             const post = await Article.findOne({ pid: postId });
 
-            res.send({ article: post });
-            
-            return
+            res.status(200).send({ article: post });
         }
     }
 
@@ -50,15 +48,13 @@ export const createPost: RequestHandler = async(req, res) => {
 
     let imageURL: any = "";
 
-    // console.log(req.file);
-    // console.log(req.body);
 
     if (req.file !== undefined){
         imageURL = await uploadImage(req);
     }
 
-    
-    const newPost = await new Article({ 
+    // Create new post
+    await new Article({ 
         pid: postNum,
         author: {
             username: username,
@@ -69,17 +65,13 @@ export const createPost: RequestHandler = async(req, res) => {
         timestamp: Date.now()
     }).save();
 
-    // await newPost.save();
-
-    // const allPosts: any = await Article.find({ 'author.username': username });
-
-    // res.send({ articles: allPosts.posts });
 
     const result = await getAllPosts(username);
 
-    res.send({ articles: result.posts });
+    res.status(200).send({ articles: result.posts });
 }
 
+// Update the post content or Update a comment or Create a comment
 export const updatePost: RequestHandler = async(req, res) => {
     const pid = req.params.id;
     const username: string = req.body.username;
@@ -92,7 +84,7 @@ export const updatePost: RequestHandler = async(req, res) => {
     if (req.body.commentId !== undefined){
         const commentId = req.body.commentId;
 
-        
+        // Add new comment
         if (commentId === "-1"){
             const newComment: IComment = {
                 cid: post?.comments.length!,
@@ -106,16 +98,14 @@ export const updatePost: RequestHandler = async(req, res) => {
 
             const newPost = await Article.findOneAndUpdate({ pid: pid }, { $push: { comments: newComment } }, { new: true });
             
-            res.send(newPost);
-            return;
+            res.status(200).send({'article': newPost});
         }
         else{
             // check if the user owned the comment
             const comment = post?.comments[commentId]
 
             if (comment?.author.username !== username){
-                res.sendStatus(401);
-                return;
+                res.status(403).send("This user does not owned the requested comment");
             }
             else{
                 // update the comment
@@ -130,91 +120,80 @@ export const updatePost: RequestHandler = async(req, res) => {
                     { new: true }
                 )
 
-                res.send({'article': updatedPost}); // 
-                return;
+                res.status(200).send({'article': updatedPost}); 
             }
         }
     }
     // Update Post
 
      // check if the user owned the post
-     if (post?.author.username !== username){
-         res.sendStatus(401);
-         return;
-     }
-     else{
-        const newPost = await Article.findOneAndUpdate({ pid: pid }, { text: text }, { new: true});
+    if (post?.author.username !== username){
+        res.status(403).send("This user does not owned the requested post");
+    }
+    else{
+        const newPost = await Article.findOneAndUpdate({ pid: pid }, { text: text }, { new: true });
 
-        res.send(newPost);
-     }
+        res.status(200).send({'article': newPost});
+    }
 } 
 
 
 const getAllPosts = async(username: string) =>{
-  
+    
+    // Use the MongoDB aggregate pipeline
+    // Get all posts for the user itself and posts from all of his friends
     const agg: any = [
-        {
-        '$match': {
-            'username': username
-        }
-        }, {
-        '$lookup': {
-            'from': 'articles', 
-            'let': {
-            'username': '$username', 
-            'friends': '$friends'
-            }, 
-            'pipeline': [
-            {
-                '$match': {
-                '$expr': {
-                    '$or': [
-                    {
-                        '$eq': [
-                        '$$username', '$author.username'
-                        ]
-                    }, {
-                        '$in': [
-                        '$author.username', '$$friends'
-                        ]
-                    }
-                    ]
-                }
-                }
-            }, {
-                '$sort': {
-                'timestamp': -1
-                }
+        {   
+            '$match': { // First find the user document (Only one)
+                'username': username
             }
-            ], 
-            'as': 'posts'
-        }
-        }, {
-        '$project': {
-            '_id': 0, 
-            'posts': 1
-        }
+        }, 
+        {
+            '$lookup': { // Perform a JOIN operation
+                'from': 'articles', // Join with table "articles"
+                'let': { // Set the column 'username' equals to the value from the document
+                    'username': '$username', 
+                    'friends': '$friends'
+                }, 
+                'pipeline': [ 
+                    // $variable is the document array field 
+                    // $$variable is the variable you set in let{}
+                    {
+                        '$match': {
+                            '$expr': { // build query expressions that compare fields from the same document
+                                '$or': [ // Either of condition will be included
+                                    {
+                                        '$eq': [
+                                            '$$username', '$author.username' // If the author of any posts is user itself
+                                        ]
+                                    }, {
+                                        '$in': [
+                                            '$author.username', '$$friends' // If the author of any posts is friend with user
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }, 
+                    {
+                        '$sort': { // The latest posts stay on top
+                            'timestamp': -1
+                        }
+                    }
+                ], 
+                'as': 'posts'
+            }
+        }, 
+        {
+            '$project': { // Project only the 'posts' field
+                '_id': 0, 
+                'posts': 1
+            }
         }
     ];
   
-  const result = await Profile.aggregate(agg);
+    const result = await Profile.aggregate(agg);
   
 
-  return result[0];
+    return result[0];
 }
-
-
-export const updateTest: RequestHandler = async(req, res) => {
-    await Article.updateMany(
-        { },
-        { $set: { "comments.$[elem].author.username" : "Barry" } },
-        { arrayFilters: [ { "elem.author.username": {"$eq": "Jack"} } ] }
-    )
-
-    await Article.updateMany(
-        { 'author.username': "Barry"},
-        { $set: { "author.username" : "Mack" } },
-    )
-
-    res.sendStatus(200);
-} 
