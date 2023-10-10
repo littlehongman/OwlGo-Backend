@@ -32,7 +32,7 @@ on:
 
 env:
   AWS_REGION: us-east-1                # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: 524618625487.dkr.ecr.us-east-1.amazonaws.com/owl-go           # set this to your Amazon ECR repository name
+  ECR_REPOSITORY: owl-go           # set this to your Amazon ECR repository name
   ECS_SERVICE: owlgo-backend-service                 # set this to your Amazon ECS service name
   ECS_CLUSTER: owlgo-backend-cluster                 # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: owlgo-backend-task-definition.json # set this to the path to your Amazon ECS task definition
