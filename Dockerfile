@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:16-slim
 
 WORKDIR /app
 
@@ -9,4 +9,6 @@ RUN npm install
 COPY . /app
 
 RUN npm run build
+
+EXPOSE 4000
 CMD ["npm", "start"]

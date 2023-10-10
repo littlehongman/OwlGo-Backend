@@ -35,7 +35,7 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: MODE === "development"? "http://localhost:4000/auth/google/redirect" : "https://owl-go.herokuapp.com/auth/google/redirect",
+      callbackURL: MODE === "development"? "http://localhost:4000/auth/google/redirect" : "/auth/google/redirect",
       passReqToCallback: true,
 	  //proxy: true
     },
