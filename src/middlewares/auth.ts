@@ -128,7 +128,7 @@ const login = async(req: Request, res: Response) => {
             res.cookie(cookieKey, sessionId, { maxAge: 3600 * 1000, httpOnly: true});//, secure: true });
         }
         else{
-            res.cookie(cookieKey, sessionId, { maxAge: 3600 * 1000, httpOnly: true, secure: true, sameSite: 'none'});//, secure: true });
+            res.cookie(cookieKey, sessionId, { maxAge: 3600 * 1000, httpOnly: true, sameSite: 'none'});//, secure: true });
         }
     
         let msg = { username: username, result: 'success'};
@@ -193,7 +193,7 @@ router.get("/auth/google/redirect", passport.authenticate("google" , {failureRed
             res.cookie(cookieKey, sessionId, { maxAge: 3600 * 1000, httpOnly: true});
         }
         else{
-            res.cookie(cookieKey, sessionId, { maxAge: 3600 * 1000, httpOnly: true, secure: true, sameSite: 'none'});//, secure: true });
+            res.cookie(cookieKey, sessionId, { maxAge: 3600 * 1000, httpOnly: true, sameSite: 'none'});//, secure: true });
         }
 
         
